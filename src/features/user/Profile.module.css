@@ -1,0 +1,40 @@
+.container {
+   max-width: 40%;
+}
+
+.loadingContainer {
+   min-height: 100vh;
+   margin-top: 10%;
+}
+
+.card.card {
+   width: 100%;
+   margin-bottom: 36px;
+}
+
+.button.button {
+   max-width: 150px;
+}
+
+.subSection {
+   padding: 24px 0 12px;
+}
+
+.confirmDelete {
+   display: flex;
+   align-items: flex-start;
+   margin-top: 12px;
+   gap: 12px;
+   flex-direction: column;
+}
+
+.confirmDeleteButtons {
+   display: flex;
+   gap: 12px;
+   margin-top: 12px;
+   flex-direction: row;
+}
+
+.confirmDeleteButtons .button {
+   margin-top: 0;
+}

@@ -1,0 +1,127 @@
+.nav {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 20px 20px 18px;
+   background-color: var(--background);
+   border-bottom: 1px solid #ddd;
+   color: black;
+   font-size: 14px;
+   font-style: normal;
+   font-weight: 700;
+   line-height: 24px; 
+   user-select: none;
+   position: sticky;
+   top: 0;
+   z-index: 11;
+}
+
+.left {
+   display: flex;
+   gap: 10px;
+}
+
+.right {
+   display: flex;
+   gap: 10px;
+}
+
+.link {
+   padding: 8px 12px;
+   cursor: pointer;
+   text-decoration: none;
+   color: inherit;
+   display: flex;
+   gap: 8px;
+}
+
+.link:hover {
+   background-color: var(--primary-light-100);
+   border-radius: 8px;
+}
+
+.login {
+   background-color: var(--primary-light-100);
+   color: var(--primary);
+   border-radius: 8px;
+   padding: 8px 12px;
+   cursor: pointer;
+}
+.login:hover {
+   background-color: var(--primary-light-200);
+}
+
+.signup {
+   background-color: var(--primary);
+   color: white;
+   border-radius: 8px;
+   padding: 8px 12px;
+   cursor: pointer;
+}
+
+.signup:hover {
+   background-color: var(--primary);
+   opacity: 0.8;
+}
+
+.avatar {
+   cursor: pointer;
+   background-color: var(--primary-light-100);
+   border-radius: 50%;
+   width: 36px;
+   height: 36px;
+   padding: 8px;
+}
+
+.avatar:hover {
+   background-color: var(--primary-light-200);
+}
+
+.subAvatar {
+   cursor: pointer;
+   background-color: var(--primary-light-100);
+   border-radius: 8px;
+   width: 36px;
+   height: 36px;
+   padding: 8px; 
+}
+
+.profileMenu {
+   position: absolute;
+   top: 60px;
+   right: 0px;
+   background-color: var(--background);
+   border-radius: 8px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   padding: 10px;
+   z-index: 1;
+   font-weight: 500;
+}
+
+.profileSubMenu {
+   padding: 8px 12px;
+   cursor: pointer;
+   display: flex;
+   align-items: center;
+   gap: 12px;
+}
+
+.profileSubMenu:hover {
+   background-color: var(--primary-light-100);
+   border-radius: 8px;
+}
+
+.captionText.captionText {
+   margin-bottom: 24px;
+}
+
+.modalContent {
+   display: flex;
+   align-items: center;
+   flex-direction: column;
+}
+
+.loadingText {
+   font-size: 18px;
+   font-weight: bold;
+}

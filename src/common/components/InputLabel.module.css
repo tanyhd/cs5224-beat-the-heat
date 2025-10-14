@@ -1,0 +1,25 @@
+.container {
+   width: 100%;
+}
+
+.inputContainer {
+   position: relative;
+   display: flex;
+   align-items: center;
+   width: 100%;
+}
+
+.iconWrapper {
+   position: absolute;
+   top: 25%;
+   right: 10px;
+}
+
+.label {
+   font-size: 14px;
+   font-style: normal;
+   font-weight: 500;
+   display: flex;
+   margin-top: 12px;
+   margin-bottom: 8px;
+}

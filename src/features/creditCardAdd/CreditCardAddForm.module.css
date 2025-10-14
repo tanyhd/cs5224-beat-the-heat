@@ -1,0 +1,75 @@
+.button.button {
+    max-width: 150px;
+    margin-bottom: 48px;
+}
+
+.formRow {
+    display: flex;
+    gap: 16px;
+    flex-direction: row;
+}
+
+.toggleWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.formContainer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.inputLabel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.inputLabel>.inputContainer {
+    width: 100%;
+}
+
+.input.input {
+    height: 42px;
+    width: 100%;
+}
+
+.trackingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.headingWithIcon {
+    display: flex;
+    align-items: center;
+}
+
+.headingWithIcon svg {
+    margin-right: 8px;
+}
+
+.modalContentContainer {
+    max-width: 400px;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 200px;
+}
+
+.otpInput {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.otpButton.otpButton {
+    width: 150px;
+}

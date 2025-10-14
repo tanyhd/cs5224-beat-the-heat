@@ -1,0 +1,33 @@
+.button.button {
+    max-width: 150px;
+    margin-right: 16px;
+    margin-bottom: 48px;
+}
+
+.trackingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.toggleWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.headingWithIcon {
+    display: flex;
+    align-items: center;
+}
+
+.headingWithIcon svg {
+    margin-right: 8px;
+}
+
+.formContainer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,17 @@
+.buttonGroup {
+   display: flex;
+   gap: 8px;
+   width: 240px;
+   margin-bottom: 48px;
+}
+
+.subHeader {
+   margin-bottom: 36px;
+}
+
+.resultContainer {
+   display: flex;
+   flex-direction: row;
+   gap: 24px;
+   margin-top: 24px;
+}

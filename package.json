@@ -1,0 +1,35 @@
+{
+  "name": "courseproject-3",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "mongo courseproject3 scripts/init.mongo.js && next build && next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.13.3",
+    "axios": "^1.8.3",
+    "bcrypt": "^5.1.1",
+    "cheerio": "^1.0.0",
+    "classnames": "^2.5.1",
+    "mongodb": "^3.7.3",
+    "next": "15.2.1",
+    "node": "^20.19.0",
+    "node-jose": "^2.2.0",
+    "pdfreader": "^3.0.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "request": "^2.88.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.2.1",
+    "typescript": "^5"
+  }
+}

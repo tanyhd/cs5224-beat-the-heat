@@ -1,0 +1,46 @@
+.subHeader {
+   margin: 36px 0 24px;
+}
+.inputLabel {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+}
+.inputLabel > .inputContainer {
+   width: 100%;
+}
+.input.input {
+   height: 42px;
+   width: 100%;
+}
+.inputGroupOne {
+   display: flex;
+   gap: 16px;
+}
+.inputGroupTwo {
+   display: flex;
+   gap: 16px;
+}
+.inputGroupThree {
+   display: flex;
+   gap: 16px; 
+   flex-direction: row;
+}
+.inputGroupFour {
+   display: flex;
+   gap: 16px; 
+   flex-direction: row;
+}
+.button {
+   margin-bottom: 48px;
+   width: 150px;
+}
+
+.searchButton {
+   width: 200px;
+}
+
+.buttonGroup {
+   display: flex;
+   gap: 24px;
+}

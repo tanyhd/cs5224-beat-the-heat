@@ -1,0 +1,11 @@
+export const SSL_CERT_PATH = './src/certs/cert.pem';
+export const SSL_KEY_PATH = './src/certs/key_7008c678-c8cf-499d-9ef3-4e144c3c2820.pem';
+export const SSL_CA_CERTH_PATH = '';
+export const USER_ID = '14SLISRXM2YRMI2FT3BE21_a1WcJB0GBdbseTz10qmYEgQiV8';
+export const PASSWORD = 'ciCVK4By01Ix4oR2yr53ToD85K10ALKtuuxx1mS';
+export const ENCRYPTION_KEY_PATH = './src/certs/key_d303ed23-59c5-43a5-bbaf-c9bd0ce30f45.pem';
+export const ENCRYPTION_CLIENT_CERT_PATH = './src/certs/client_cert_d303ed23-59c5-43a5-bbaf-c9bd0ce30f45.pem';
+export const ENCRYPTION_SERVER_CERT_PATH = './src/certs/server_cert_d303ed23-59c5-43a5-bbaf-c9bd0ce30f45.pem';
+export const ENCRYPTION_KEY_ID = 'd303ed23-59c5-43a5-bbaf-c9bd0ce30f45';
+export const VDP_HOST = 'https://sandbox.api.visa.com';
+export const PORT = 3000;

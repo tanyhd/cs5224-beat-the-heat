@@ -1,0 +1,15 @@
+.container {
+   padding-top: 44px;
+   padding-left: 200px;
+   padding-right: 200px;
+   user-select: none;
+   min-height: 100vh;
+}
+
+@media (max-width: 1068px) {
+   .container {
+      padding-left: 16px;
+      padding-right: 16px;
+   }
+   
+}

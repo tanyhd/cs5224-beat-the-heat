@@ -1,0 +1,44 @@
+.label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #5c5b5b;  /* Dark grey color */
+  }
+  
+  .inputContainer {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+  
+  .input {
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f0f0f0;  /* Light grey background */
+    border: none;               /* No borders */
+    box-shadow: none;           /* Ensure no box shadow */
+  }
+  
+  .select {
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f7f7f7;  /* Light grey background */
+    border: none;               /* No borders */
+    box-shadow: none;    
+    color-scheme: light;/* Ensure no box shadow */
+  }
+
+  .input {
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #f7f7f7;  /* Light grey background */
+    border: none;               /* No borders */
+    box-shadow: none;   
+    color-scheme: light;/* Ensure no box shadow */
+  }
+  
+  /* Style for placeholder text in the Name Filter */
+  .input::placeholder {
+    color: #303030;  /* Set the placeholder text color to light grey */
+  }
+  
+  

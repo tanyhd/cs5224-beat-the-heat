@@ -1,0 +1,27 @@
+.container {
+    min-height: 100vh;
+}
+
+.cardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.loadingContainer {
+    min-height: 100vh;
+    margin-top: 10%;
+}
+
+.button.button {
+    display: flex;
+    max-width: 100px;
+    gap: 12px;
+    margin-top: 12px;
+    flex-direction: column;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 12px;
+}

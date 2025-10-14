@@ -1,0 +1,32 @@
+.form {
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   width: 30%;
+   margin: auto;
+   font-weight: 500;
+}
+
+.caption {
+   color: var(--caption);
+   margin: 40px auto;
+   display: flex;
+}
+
+.link {
+   margin-left: 16px;
+   color: #3E82E7;
+   font-size: 14px;
+   font-weight: 500;
+}
+
+.eyeIcon {
+   right: 24px;
+   position: relative;
+   cursor: pointer;
+}
+
+.error {
+   color: red;
+   display: flex;
+}

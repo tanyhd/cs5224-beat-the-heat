@@ -1,0 +1,7 @@
+.icon {
+   background-color: var(--primary-light-100);
+   border-radius: 8px;
+   width: 36px;
+   height: 36px;
+   padding: 8px; 
+}

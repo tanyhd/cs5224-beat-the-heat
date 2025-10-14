@@ -1,0 +1,11 @@
+.main {
+  margin: auto;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.captionText.captionText {
+  margin-bottom: 48px;
+}

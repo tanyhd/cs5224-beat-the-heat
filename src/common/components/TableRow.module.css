@@ -1,0 +1,8 @@
+.tableRow {
+   border-bottom: 1px solid #E5E7EB;
+}
+
+.tableRow td, .tableRow th {
+   width: 10%;
+   padding: 20px 0;
+}

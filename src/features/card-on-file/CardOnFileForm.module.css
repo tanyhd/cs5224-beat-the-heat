@@ -1,0 +1,114 @@
+.loadingContainer {
+   min-height: 100vh;
+   margin-top: 10%;
+}
+
+.container {
+   padding: 20px;
+ }
+ 
+ .table {
+   width: 100%;
+   border-collapse: collapse;
+   text-align: center;
+   min-width: 1200px; /* Ensures that the table is at least 1200px wide */
+   table-layout: fixed; /* Ensures that the table layout is fixed */
+ }
+
+ .td {
+   height: 48px;            /* Fixed height for rows */
+   padding: 4px;            /* Adjust as needed */
+   text-align: center;      /* Center text horizontally */
+   font-size: 12px;
+   vertical-align: middle;  /* Ensure text is centered vertically */
+   border-bottom: 1px solid #f3f3f3;
+ }
+ 
+ .th{
+   font-size: 14px;
+   padding: 10px;
+   border-bottom: 1px solid #e6e4e4; /* Adds a bottom border to each cell */
+   color: #5c5b5b;  /* Dark grey color */
+   }
+
+.buttonContainer {
+  display: flex;           /* Use flexbox to center button */
+  justify-content: center; /* Center button horizontally */
+  align-items: center;     /* Center button vertically */
+  height: 100%;            /* Ensure it takes full height of the cell */
+}
+
+/* Add border-radius to make buttons round */
+.buttonContainer button {
+  width: 100px; /* Fixed width */
+  height: 30px; /* Fixed height */
+  padding: 4px 12px;
+  display: flex;
+  justify-content: center; /* Center text horizontally */
+  margin-top: 0;
+  align-items: center;
+  border-radius: 20px;
+  font-size: 12px;     /* optional: make text nicer */
+}
+
+/* Block button style */
+.buttonContainer .blockButton {
+  background-color: #FF5B27;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for Block */
+.buttonContainer .blockButton:hover {
+  background-color: #d2491f/* Slightly darker on hover */
+}
+
+/* Cancel button style */
+.buttonContainer .cancelButton {
+  background-color: gray;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for Cancel */
+.buttonContainer .cancelButton:hover {
+  background-color: rgb(68, 68, 68); /* Slightly darker on hover */
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;  /* Ensure it takes full height of the cell */
+  width: 100%;   /* Ensure it takes full width of the cell */
+}
+
+.blockAll {
+  width: 180px; /* Fixed width */
+  display: block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  align-items: center;
+  text-align: center;
+  border-radius: 20px; 
+  padding: 10px;
+  font-size: 16px;
+  background-color: #FF5B27;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.iconSmall svg {
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  display: flex;
+  align-items: center;  /* Vertically center the icon and text */
+  justify-content: flex-start;  /* Align them to the left */
+}
+
