@@ -3,7 +3,7 @@ import Challenges from '../../features/challengeHub/component/ChallengeHub';
 import Header from '@/common/components/Header';
 import styles from './ChallengePage.module.css'
 
-const OFFERS_BREADCRUMBS = [
+const CHALLENGES_BREADCRUMBS = [
    { name: "Home", href: "/" },
    { name: "Chill Challenge Hub", href: "/challengeHub" },
  ]
@@ -13,7 +13,7 @@ export default async function ChallengePage() {
    const data = await response.json();
    return (
       <div>
-         <Breadcrumb links={OFFERS_BREADCRUMBS}/>
+         <Breadcrumb links={CHALLENGES_BREADCRUMBS}/>
          <Header 
             headerText='Chill Challenge Hub' 
             captionText='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' 

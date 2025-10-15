@@ -16,7 +16,7 @@ import { LOADING_DELAY } from "../constants/loadingDelay";
 import LoadingDots from "./LoadingDots";
 
 
-const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/offers'];
+const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub'];
 const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'CREDITCARD', React.JSX.Element> = {
    TAG: <Tag />,
    TRENDINGUP: <TrendingUp />,
