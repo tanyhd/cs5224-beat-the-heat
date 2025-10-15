@@ -1,20 +1,20 @@
 {
-  "name": "courseproject-3",
+  "name": "cs5224-beat-the-heat",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "mongo courseproject3 scripts/init.mongo.js && next build && next start",
+    "start": "mongo beat_the_heat scripts/init.mongo.js && next build && next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.3",
     "axios": "^1.8.3",
     "bcrypt": "^5.1.1",
-    "cheerio": "^1.0.0",
+    "cheerio": "^1.1.2",
     "classnames": "^2.5.1",
-    "mongodb": "^3.7.3",
+    "mongodb": "^6.20.0",
     "next": "15.2.1",
     "node": "^20.19.0",
     "node-jose": "^2.2.0",

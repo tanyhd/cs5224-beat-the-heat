@@ -9,7 +9,7 @@ export async function connectToDb() {
         return cachedDb;
     }
 
-    const url = 'mongodb://localhost/courseproject3';
+    const url = 'mongodb://localhost/beat_the_heat';
     const client = new MongoClient(url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
