@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { scrapeOffersMilelion } from '../../../../services/scrape';
+import { scrapeHealthHubProgrammes } from '../../../../services/scrape';
 import { saveScrapedData } from '../../../../services/mongodb';
 
 export async function GET(request) {
     try {
-        const results = await scrapeOffersMilelion()
+        const results = await scrapeHealthHubProgrammes()
         const saved = await saveScrapedData(results);
         
         if (!saved) {

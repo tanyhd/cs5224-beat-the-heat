@@ -7,10 +7,10 @@ import {LinkDetailBox} from "./DetailBox"
 
 const HOMEPAGE_NAV_LINKS = [
    {
-     label: 'View Card Offers',
-     subLabel: 'Discover exclusive offers and rewards available for your credit cards.',
-     linkText: 'View Offers',
-     link: '/offers',
+     label: 'Chill Challenge Hub',
+     subLabel: 'Join walking or cycling challenges to stay active and cool',
+     linkText: 'Challenge Hub',
+     link: '/challengeHub',
      icon: <Tag stroke={"#FF5B27"}/>
    },
    {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { findAllScrapedData } from "../../../services/mongodb";
-import { scrapeOffersMilelion } from '@/services/scrape';
 import { saveScrapedData } from '../../../services/mongodb';
+import { scrapeHealthHubProgrammes } from '../../../services/scrape';
 
 
 export async function GET() {
@@ -9,7 +9,7 @@ export async function GET() {
         let result = await findAllScrapedData();
 
         if (!result || result.length === 0) {
-            const scraped = await scrapeOffersMilelion();
+            const scraped = await scrapeHealthHubProgrammes();
             await saveScrapedData(scraped);
             result = await findAllScrapedData();
         }

@@ -14,7 +14,7 @@
     "bcrypt": "^5.1.1",
     "cheerio": "^1.1.2",
     "classnames": "^2.5.1",
-    "mongodb": "^6.20.0",
+    "mongodb": "^3.7.3",
     "next": "15.2.1",
     "node": "^20.19.0",
     "node-jose": "^2.2.0",
