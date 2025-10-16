@@ -2,7 +2,6 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 
 export async function scrapeHealthHubProgrammes() {
-  console.log("[S0] START scrapeHealthHubProgrammes");
   const pageUrl = "https://www.healthhub.sg/programmes";
 
   // 1) Load page & find All Programmes props
@@ -24,10 +23,9 @@ export async function scrapeHealthHubProgrammes() {
     if (p?.sig === "healthprogramme") props = p;
   });
   if (!props) {
-    console.log("[S2] All Programmes block not found");
+    console.log("All Programmes block not found");
     return [];
   }
-  console.log("[S2] Found All Programmes props:", props);
 
   // 2) First call (small p) just to get Count
   const firstUrl = buildEndpointUrl(props); // uses original p (9)
@@ -41,7 +39,6 @@ export async function scrapeHealthHubProgrammes() {
     : first;
 
   const results = Array.isArray(data?.Results) ? data.Results : [];
-  console.log(`[S3] Count=${total} | Results length=${results.length}`);
 
   // 4) Parse each card's Html
   const out = [];
@@ -62,11 +59,8 @@ export async function scrapeHealthHubProgrammes() {
     if (href && title && !seen.has(href)) {
       out.push({ section: "All Programmes", url: href, title, description, imageUrl, imageAlt });
       seen.add(href);
-      console.log(`[S4] + ${title} | ${href}`);
     }
   }
-
-  console.log(`[S5] DONE. collected=${out.length} (API Count=${total})`);
   return out;
 }
 
