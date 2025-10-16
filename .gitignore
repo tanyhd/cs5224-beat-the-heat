@@ -108,3 +108,8 @@ public/App.js
 public/app.bundle.js
 public/vendor.bundle.js
 public/vendor.bundle.js.LICENSE.txt
+
+# Env files
+.env
+.env.local
+.env.*.local

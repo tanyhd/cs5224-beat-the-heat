@@ -9,14 +9,16 @@ export async function connectToDb() {
         return cachedDb;
     }
 
-    const url = 'mongodb://localhost/beat_the_heat';
+    const url = process.env.MONGODB_URI;
+    const dbName = process.env.MONGODB_DBNAME;
+
     const client = new MongoClient(url, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
     });
 
     await client.connect();
-    const db = client.db();
+     const db = dbName ? client.db(dbName) : client.db();
 
     cachedClient = client;
     cachedDb = db;
