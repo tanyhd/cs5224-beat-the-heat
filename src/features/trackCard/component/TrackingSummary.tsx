@@ -32,7 +32,7 @@ export default function TrackingSummary({ selectedRewardsData, selectedCard }: T
                details={{
                   label: 'Spending Target',
                   subLabel: spendingTarget,
-                  icon: <Target stroke="#FF5B27" />
+                  icon: <Target stroke="#06B6D4" />
                }}
             />
             <LinkDetailBox
@@ -41,7 +41,7 @@ export default function TrackingSummary({ selectedRewardsData, selectedCard }: T
                details={{
                   label: 'Remaining Amount',
                   subLabel: `${(spendingTarget - totalExpenses).toFixed(2)}`,
-                  icon: <DollarSign stroke="#FF5B27" />
+                  icon: <DollarSign stroke="#06B6D4" />
                }}
             />
             <LinkDetailBox
@@ -50,7 +50,7 @@ export default function TrackingSummary({ selectedRewardsData, selectedCard }: T
                details={{
                   label: 'Approval Date',
                   subLabel: `${selectedCard?.cardApprovalDate}`,
-                  icon: <Calendar stroke="#FF5B27" />
+                  icon: <Calendar stroke="#06B6D4" />
                }}
             />
             <LinkDetailBox
@@ -59,7 +59,7 @@ export default function TrackingSummary({ selectedRewardsData, selectedCard }: T
                details={{
                   label: 'Remaining Days',
                   subLabel: remainingDays < 0 ? `The spending period is due on ${supposedEndDate}` : `${remainingDays} days`,
-                  icon: <Clock stroke="#FF5B27" />
+                  icon: <Clock stroke="#06B6D4" />
                }}
             />
          </div>

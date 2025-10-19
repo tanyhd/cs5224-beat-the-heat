@@ -420,31 +420,31 @@ export default function CardOnFileForm() {
             <thead>
               <tr>
               <th className={styles.th}>
-                <ShoppingCart style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                <ShoppingCart style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                 Name
               </th>
               <th className={styles.th}>
-                <Grid style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                <Grid style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                 MCC
               </th>
               <th className={styles.th}>
-                <TrendingUp style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                <TrendingUp style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                 Transaction Count
               </th>
                 <th className={styles.th}>
-                  <DollarSign style={{ width: '14px', height: '14px', marginRight: '4px' }} stroke="#FF5B27" />
+                  <DollarSign style={{ width: '14px', height: '14px', marginRight: '4px' }} stroke="#06B6D4" />
                   Last Trans Amount
               </th>
               <th className={styles.th}>
-                  <Calendar style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                  <Calendar style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                   Last Trans Date
               </th>
               <th className={styles.th}>
-                  <Target style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                  <Target style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                   Status
               </th>
               <th className={styles.th}>
-                  <Checkbox style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#FF5B27"  />
+                  <Checkbox style={{ width: '14px', height: '14px', marginRight: '8px' }} stroke="#06B6D4"  />
                   Action
               </th>
               </tr>

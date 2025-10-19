@@ -178,7 +178,7 @@ export default function CreditCardEditForm({ card, onSave, onCancel }: CreditCar
                         details={{
                             label: 'Card Name',
                             subLabel: "Select a card name from the dropdown",
-                            icon: <CreditCard stroke="#FF5B27" />,
+                            icon: <CreditCard stroke="#06B6D4" />,
                         }}
                     />
                     <Dropdown
@@ -194,7 +194,7 @@ export default function CreditCardEditForm({ card, onSave, onCancel }: CreditCar
             <div>
                 <div className={styles.toggleWrapper}>
                     <div className={styles.headingWithIcon}>
-                        <Target stroke="#FF5B27" />
+                        <Target stroke="#06B6D4" />
                         <h3>Enable Tracking Expense</h3>
                     </div>
                     <span className={styles.toggleLabel}></span>

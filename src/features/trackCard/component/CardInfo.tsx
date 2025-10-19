@@ -35,7 +35,7 @@ export default function CardInfo ({selectedCard, selectedRewardsData, fetchCards
                   details={{
                   label: selectedCard?.rewardsType, 
                   subLabel: <>Card Provider: {selectedCard?.provider}<br />Card Number: {selectedCard?.cardNumber}</>,
-                  icon: <CreditCard stroke="#FF5B27" />
+                  icon: <CreditCard stroke="#06B6D4" />
                   }}
                />
             </div>

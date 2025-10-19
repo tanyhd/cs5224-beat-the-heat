@@ -31,19 +31,19 @@ export default function MerchantSearchForm() {
   const RESULT_SEQUENCE: { map: keyof typeof merchantResult; label: string; icon: JSX.Element }[] = [{
     map: 'mcc',
     label: 'Merchant Category Code',
-    icon: <Code stroke={"#FF5B27"} />
+    icon: <Code stroke={"#06B6D4"} />
   }, {
     map: 'mccDescription',
     label: 'Category Description',
-    icon: <FileText stroke={"#FF5B27"} />
+    icon: <FileText stroke={"#06B6D4"} />
   }, {
     map: 'storeName',
     label: 'Merchant Name',
-    icon: <Grid stroke={"#FF5B27"} />
+    icon: <Grid stroke={"#06B6D4"} />
   }, {
     map: 'url',
     label: 'Merchant URL',
-    icon: <Link stroke={"#FF5B27"} />,
+    icon: <Link stroke={"#06B6D4"} />,
   }];
 
   const handleSubmit = async (e: React.FormEvent) => {

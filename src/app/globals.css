@@ -2,10 +2,10 @@
   --background: #ffffff;
   --light-background: #F8F8F7;
   --foreground: #171717;
-  --primary: #FF5B27;
-  --primary-light-50: rgba(255, 91, 39, 0.05);
-  --primary-light-100: rgba(255, 91, 39, 0.1);
-  --primary-light-200: rgba(255, 91, 39, 0.2);
+  --primary: #06B6D4;
+  --primary-light-50: rgba(239, 252, 251, 0.4);
+  --primary-light-100: rgba(239, 252, 251, 0.5);
+  --primary-light-200: rgba(239, 252, 251, 0.8);
   --caption: #6B7280;
 
 }

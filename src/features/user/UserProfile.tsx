@@ -16,7 +16,7 @@ import Notification, { NotificationType, NotificationTypeEnum } from "@/common/c
 const HEADER_DETAIL_BOX = {
     label: 'Personal Information',
     subLabel: 'Update your email address and manage your account security',
-    icon: <Avatar stroke={"#FF5B27"} />
+    icon: <Avatar stroke={"#06B6D4"} />
 }
 
 

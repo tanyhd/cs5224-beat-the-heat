@@ -71,11 +71,11 @@ const Topnav: React.FC = () => {
          {isMounted && <div className={styles.right}>
             {isAuthenticated ? (
                <>
-                  <Avatar stroke={"#FF5B27"} className={styles.avatar} onClick={() => {setProfileMenuToggle(!profileMenuToggle)}}/>
+                  <Avatar stroke={"#06B6D4"} className={styles.avatar} onClick={() => {setProfileMenuToggle(!profileMenuToggle)}}/>
                   <div className={styles.profileMenu} style={{display: profileMenuToggle ? 'block' : 'none'}}>
-                     <a href="/profile" className={styles.profileSubMenu}><Avatar stroke={"#FF5B27"} className={styles.subAvatar}/>Manage Profile</a>
+                     <a href="/profile" className={styles.profileSubMenu}><Avatar stroke={"#06B6D4"} className={styles.subAvatar}/>Manage Profile</a>
                      <a href="/cards" className={styles.profileSubMenu}><CreditCard stroke={"#FF5827"} className={styles.subAvatar}/>Manage Cards</a>
-                     <a href="/login" className={styles.profileSubMenu} onClick={() => {sessionStorage.removeItem('userToken')}}><Logout stroke="#FF5B27" className={styles.subAvatar}/>Sign out</a>
+                     <a href="/login" className={styles.profileSubMenu} onClick={() => {sessionStorage.removeItem('userToken')}}><Logout stroke="#06B6D4" className={styles.subAvatar}/>Sign out</a>
                   </div>
                </>
             ) : (

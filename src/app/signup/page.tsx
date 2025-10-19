@@ -146,7 +146,7 @@ export default function SignupPage() {
                }
             />
             <div className={styles.checkboxContainer}>
-               <Checkbox className={styles.checkboxIcon} stroke="#FF5B27" />
+               <Checkbox className={styles.checkboxIcon} stroke="#06B6D4" />
                <div className={styles.checkboxText}>
                   <h4>Terms and Conditions</h4>
                   <p className={styles.checkboxCaption}>I agree to the Terms of Service and Privacy Policy</p>

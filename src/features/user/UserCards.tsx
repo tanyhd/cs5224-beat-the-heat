@@ -182,7 +182,7 @@ export default function UserCards() {
                                 ? card.rewardsType
                                 : card.provider,
                             subLabel: `Expires: ${card.expiry}`,
-                            icon: <CreditCard stroke='#FF5B27' />,
+                            icon: <CreditCard stroke='#06B6D4' />,
                             image: card.rewardsImageUrl,
                             actions: [
                                 <div className={styles.buttonGroup}>

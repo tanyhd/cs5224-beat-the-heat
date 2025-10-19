@@ -19,7 +19,7 @@ export default function Home() {
             autoplay
           />
         </div>
-        <Header captionTextClassName={styles.captionText} headerText="Welcome to CardMaster" captionText="Manage your credit cards with ease"/>
+        <Header captionTextClassName={styles.captionText} headerText="Welcome to Beat The Heat" captionText="Find cooler routes, join chill challenges, and track your HeatBeat to move smarter on hot days."/>
         <LandingNavigation />
       </main>
     </>
