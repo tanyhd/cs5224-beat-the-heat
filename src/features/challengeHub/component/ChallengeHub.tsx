@@ -11,12 +11,13 @@ import Avatar from '@/common/icons/Avatar';
 
 export interface Challenge {
   _id?: MongoId;
-  section?: string;
-  url?: string;
   title?: string;
   description?: string;
-  imageUrl?: string;
-  imageAlt?: string;
+  dateTime?: string; // keep as plain string
+  imgUrl?: string;
+  href?: string;
+  fee?: string; // default to 'Free' if empty
+  source?: string; // e.g. 'nparks' | 'healthhub'
 }
 
 type MongoId = string | { $oid: string };
@@ -28,6 +29,17 @@ function keyFromId(id: MongoId | undefined, fallback: string) {
   return fallback;
 }
 
+function firstNonEmpty<T = string>(...vals: (T | undefined | null)[]) {
+  for (const v of vals) {
+    if (typeof v === 'string') {
+      if ((v as string).trim()) return (v as unknown) as T;
+    } else if (v != null) {
+      return v as T;
+    }
+  }
+  return undefined;
+}
+
 export default function Challenges({ challenges }: { challenges: Challenge[] }) {
   if (!Array.isArray(challenges) || challenges.length === 0) {
     return <div style={{ padding: 16 }}>No items found.</div>;
@@ -37,33 +49,66 @@ export default function Challenges({ challenges }: { challenges: Challenge[] }) 
     <div className={styles?.grid ?? ''} style={{ display: 'grid', gap: 24 }}>
       {challenges.map((item, index) => {
         const key = keyFromId(item._id, String(index));
-        const title = item.title ?? 'Untitled';
-        const href = item.url ?? '#';
+
+        const title = firstNonEmpty(item.title, 'Untitled') as string;
+        const href = firstNonEmpty(item.href, '#') as string;
+        const img = firstNonEmpty(item.imgUrl) as string | undefined;
+        const desc = firstNonEmpty(item.description) as string | undefined;
+        const dateTime = firstNonEmpty(item.dateTime) as string | undefined;
+        const fee = (firstNonEmpty(item.fee) as string | undefined)?.trim() || 'Free';
+        const source = (firstNonEmpty(item.source) as string | undefined) || '';
 
         return (
           <article
             key={key}
             className={styles?.card ?? ''}
-            style={{ border: '1px solid #eee', borderRadius: 12, padding: 16 }}
+            style={{
+              border: '1px solid #eee',
+              borderRadius: 12,
+              padding: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+            }}
           >
-            {item.section && (
-              <div
-                className={styles?.badge ?? ''}
+            {/* Top row badges */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {source ? (
+                <span
+                  className={styles?.badge ?? ''}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 600,
+                    display: 'inline-block',
+                    padding: '2px 8px',
+                    borderRadius: 999,
+                    background: '#f5f5f5',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  {source}
+                </span>
+              ) : (
+                <span />
+              )}
+
+              <span
                 style={{
                   fontSize: 12,
                   fontWeight: 600,
                   display: 'inline-block',
                   padding: '2px 8px',
                   borderRadius: 999,
-                  background: '#f5f5f5',
-                  marginBottom: 8,
+                  background: '#FFF3E8',
+                  color: '#C84A07',
                 }}
+                aria-label="Fee"
               >
-                {item.section}
-              </div>
-            )}
+                {fee}
+              </span>
+            </div>
 
-            <h3 className={styles?.title ?? ''} style={{ margin: '8px 0 12px' }}>
+            <h3 className={styles?.title ?? ''} style={{ margin: '4px 0 0' }}>
               {href && href !== '#' ? (
                 <a href={href} target="_blank" rel="noreferrer" style={{ textDecoration: 'none' }}>
                   {title}
@@ -73,21 +118,23 @@ export default function Challenges({ challenges }: { challenges: Challenge[] }) 
               )}
             </h3>
 
-            {item.imageUrl && (
+            {img && (
               <img
-                src={item.imageUrl}
-                alt={item.imageAlt || item.title || 'programme image'}
-                style={{ width: '100%', maxWidth: 420, borderRadius: 10, display: 'block', marginBottom: 12 }}
+                src={img}
+                alt={item.title || 'event image'}
+                style={{ width: '100%', maxWidth: 520, borderRadius: 10, display: 'block' }}
                 loading="lazy"
               />
             )}
 
-            {item.description && (
-              <p style={{ marginBottom: 12, lineHeight: 1.5 }}>{item.description}</p>
+            {dateTime && (
+              <p style={{ margin: 0, color: '#444', fontWeight: 600 }}>{dateTime}</p>
             )}
 
+            {desc && <p style={{ margin: 0, lineHeight: 1.5 }}>{desc}</p>}
+
             {href && href !== '#' && (
-              <div>
+              <div style={{ marginTop: 8 }}>
                 <a
                   href={href}
                   target="_blank"
@@ -101,7 +148,7 @@ export default function Challenges({ challenges }: { challenges: Challenge[] }) 
                     textDecoration: 'none',
                   }}
                 >
-                  Open programme
+                  Open details
                 </a>
               </div>
             )}

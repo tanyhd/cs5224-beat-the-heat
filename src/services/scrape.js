@@ -1,111 +1,154 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-export async function scrapeHealthHubProgrammes() {
-  const pageUrl = "https://www.healthhub.sg/programmes";
+const UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36';
 
-  // 1) Load page & find All Programmes props
-  const res = await axios.get(pageUrl, {
-    timeout: 20000,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-      "Accept-Language": "en-SG,en;q=0.9",
-      Accept: "text/html,application/xhtml+xml",
-    },
-    validateStatus: () => true,
-  });
-  const $ = cheerio.load(String(res.data || ""));
-  let props = null;
-  $("main .component.search-results").each((_, el) => {
-    const raw = $(el).attr("data-properties") || "";
-    const p = safeParseProps(raw);
-    if (p?.sig === "healthprogramme") props = p;
-  });
-  if (!props) {
-    console.log("All Programmes block not found");
-    return [];
+const ABS = (url, base) => {
+  if (!url) return '';
+  try {
+    return new URL(url, base).href;
+  } catch {
+    return url;
   }
+};
 
-  // 2) First call (small p) just to get Count
-  const firstUrl = buildEndpointUrl(props); // uses original p (9)
-  const first = await callSxa(firstUrl, pageUrl);
-  const total = Number(first?.Count || 0);
-  const needSecondCall = Array.isArray(first?.Results) && first.Results.length < total;
-
-  // 3) If needed, call again with p=Count (fetch all in one go)
-  const data = needSecondCall
-    ? await callSxa(buildEndpointUrl({ ...props, p: total }), pageUrl)
-    : first;
-
-  const results = Array.isArray(data?.Results) ? data.Results : [];
-
-  // 4) Parse each card's Html
-  const out = [];
-  const seen = new Set();
-  for (const r of results) {
-    const html = r?.Html || "";
-    if (!html) continue;
-    const $$ = cheerio.load(html);
-
-    const $a = $$("a").first();
-    const href = absUrl($a.attr("href") || "", "https://www.healthhub.sg/");
-    const title = clean($$("h5.card-title").first().text());
-    const description = clean($$("p.card-content").first().text());
-    const $img = $$("img").first();
-    const imageUrl = absUrl($img.attr("src") || "", href);
-    const imageAlt = clean($img.attr("alt") || "");
-
-    if (href && title && !seen.has(href)) {
-      out.push({ section: "All Programmes", url: href, title, description, imageUrl, imageAlt });
-      seen.add(href);
+async function fetchText(url, init = {}, retries = 3) {
+  let lastErr;
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url, {
+        headers: { 'user-agent': UA, 'accept-language': 'en-US,en;q=0.9' },
+        ...init,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (e) {
+      lastErr = e;
+      await new Promise(r => setTimeout(r, 300 * (i + 1)));
     }
   }
-  return out;
+  throw lastErr;
 }
 
-/* helpers */
-function safeParseProps(s) {
-  if (!s) return null;
-  try {
-    const o = JSON.parse(s.replace(/&quot;/g, '"'));
-    return {
-      endpoint: o?.endpoint,
-      sig: o?.sig,
-      v: o?.v,
-      s: o?.s,
-      l: o?.l ?? "",
-      p: o?.p ?? 9,
-      itemid: o?.itemid,
-    };
-  } catch {
-    return null;
+function normalize({
+  title = '',
+  description = '',
+  dateTime = '',
+  imgUrl = '',
+  href = '',
+  fee = '',
+  source = '',
+}) {
+  const normFee = (fee || '').toString().trim() || 'Free';
+  return {
+    title: (title || '').toString().trim(),
+    description: (description || '').toString().trim(),
+    dateTime: (dateTime || '').toString().trim(),
+    imgUrl: (imgUrl || '').toString().trim(),
+    href: (href || '').toString().trim(),
+    fee: normFee,
+    source,
+  };
+}
+
+export async function scrapeHealthHubProgrammes() {
+  const BASE = 'https://www.healthhub.sg';
+  const PAGE = `${BASE}/programmes`;
+
+  // 1) Fetch page and locate the "All Programmes" search-results component.
+  const html = await fetchText(PAGE);
+  const $ = cheerio.load(html);
+
+  let propsJson = null;
+  $('.component.search-results[data-properties]').each((_, el) => {
+    const raw = $(el).attr('data-properties') || '';
+    try {
+      const props = JSON.parse(raw);
+      if (props.sig === 'healthprogramme') propsJson = props;
+    } catch {
+      // attributes are usually already decoded; if not, try to unescape quotes
+      try {
+        const repaired = raw.replace(/&quot;/g, '"');
+        const props = JSON.parse(repaired);
+        if (props.sig === 'healthprogramme') propsJson = props;
+      } catch {}
+    }
+  });
+
+  if (!propsJson) {
+    throw new Error('Could not find HealthHub "All Programmes" component props.');
   }
-}
-function buildEndpointUrl(props) {
-  const params = new URLSearchParams({
-    v: props.v || "",
-    s: props.s || "",
-    l: props.l ?? "",
-    p: String(props.p ?? 9),
-    sig: props.sig || "",
-    itemid: props.itemid || "",
+
+  // 2) Call their JSON endpoint but increase p (page size) to pull all results at once.
+  const qs = new URLSearchParams({
+    v: propsJson.v,
+    s: propsJson.s,
+    l: propsJson.l || '',
+    p: String(100), // large enough to cover all
+    sig: propsJson.sig,
+    itemid: propsJson.itemid,
   });
-  return `${props.endpoint}?${params.toString()}`;
+
+  const endpoint =
+    (propsJson.endpoint || `${BASE}/sxa/search/results/`).replace(/\/+$/, '') +
+    '/?' +
+    qs.toString();
+
+  const jsonTxt = await fetchText(endpoint);
+  let data;
+  try {
+    data = JSON.parse(jsonTxt);
+  } catch (e) {
+    throw new Error('Unexpected JSON from HealthHub endpoint');
+  }
+
+  const results = Array.isArray(data.Results) ? data.Results : [];
+  const out = [];
+
+  for (const r of results) {
+    // Prefer the structured Url/Name; fall back to parsing Html fragment.
+    let title = (r.Name || '').trim();
+    let href = ABS(r.Url || '', BASE);
+    let imgUrl = '';
+    let description = '';
+
+    if ((!title || !href || !imgUrl || !description) && r.Html) {
+      const $frag = cheerio.load(r.Html);
+      if (!title) {
+        title =
+          $frag('.card-title').first().text().trim() ||
+          $frag('a').first().text().trim() ||
+          title;
+      }
+      if (!href) {
+        const a =
+          $frag('a[href^="/programmes/"]').first().attr('href') ||
+          $frag('a[href]').first().attr('href');
+        href = ABS(a, BASE);
+      }
+      imgUrl =
+        ABS($frag('img').first().attr('src'), BASE) ||
+        ABS($frag('img').first().attr('thumbnailsrc'), BASE) ||
+        imgUrl;
+      description =
+        $frag('.card-content').first().text().trim() ||
+        $frag('p').first().text().trim() ||
+        '';
+    }
+
+    out.push(
+      normalize({
+        title,
+        description,
+        dateTime: '', // HH programmes page doesn't expose this
+        imgUrl,
+        href,
+        fee: 'Free', // default as requested
+        source: 'healthhub',
+      })
+    );
+  }
+
+  return out;
 }
-async function callSxa(url, referer) {
-  const r = await axios.get(url, {
-    timeout: 20000,
-    headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
-      "X-Requested-With": "XMLHttpRequest",
-      Referer: referer,
-      Accept: "application/json,text/html,*/*",
-    },
-    validateStatus: () => true,
-  });
-  return r.data || {};
-}
-function clean(s) { return String(s || "").replace(/\s+/g, " ").trim(); }
-function absUrl(href, base) { try { return href ? new URL(href, base).toString() : ""; } catch { return href || ""; } }
