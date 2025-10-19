@@ -52,6 +52,13 @@ function normalize({
   };
 }
 
+export function isRunningWalkingOrCyclingActivity(title = '') {
+  if (!title) return false;
+  const text = String(title).toLowerCase();
+  const rx = /\b(?:run\w*|jog\w*|walk\w*|hike\w*|trek\w*|cycl\w*|bike\w*|bicycl\w*|ride\w*|step\w*|move\w*)\b/;
+  return rx.test(text);
+}
+
 export async function scrapeHealthHubProgrammes() {
   const BASE = 'https://www.healthhub.sg';
   const PAGE = `${BASE}/programmes`;
@@ -72,7 +79,7 @@ export async function scrapeHealthHubProgrammes() {
         const repaired = raw.replace(/&quot;/g, '"');
         const props = JSON.parse(repaired);
         if (props.sig === 'healthprogramme') propsJson = props;
-      } catch {}
+      } catch { }
     }
   });
 
@@ -137,17 +144,19 @@ export async function scrapeHealthHubProgrammes() {
         '';
     }
 
-    out.push(
-      normalize({
-        title,
-        description,
-        dateTime: '', // HH programmes page doesn't expose this
-        imgUrl,
-        href,
-        fee: 'Free', // default as requested
-        source: 'healthhub',
-      })
-    );
+    if (isRunningWalkingOrCyclingActivity(title)) {
+      out.push(
+        normalize({
+          title,
+          description,
+          dateTime: '', // HH programmes page doesn't expose this
+          imgUrl,
+          href,
+          fee: 'Free', // default as requested
+          source: 'healthhub',
+        })
+      );
+    }
   }
 
   return out;
@@ -205,15 +214,17 @@ export async function scrapeNparksEvents(maxPages = null) {
 
       const description = (card.find('.event-card-bottom > p').first().text() || '').trim();
 
-      items.push( normalize({
-        title,
-        description,
-        dateTime,
-        imgUrl,
-        href,
-        fee, 
-        source: 'nparks',
-      }))
+      if (isRunningWalkingOrCyclingActivity(title)) {
+        items.push(normalize({
+          title,
+          description,
+          dateTime,
+          imgUrl,
+          href,
+          fee,
+          source: 'nparks',
+        }))
+      }
     });
   };
 
