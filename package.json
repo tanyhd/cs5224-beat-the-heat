@@ -19,6 +19,7 @@
     "node": "^20.19.0",
     "node-jose": "^2.2.0",
     "pdfreader": "^3.0.7",
+    "puppeteer": "^24.25.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "request": "^2.88.2"

@@ -1,5 +1,5 @@
-import axios from 'axios';
 import * as cheerio from 'cheerio';
+import puppeteer from 'puppeteer';
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36';
@@ -309,4 +309,138 @@ export async function scrapeNparksEvents(maxPages = null) {
   else console.warn('[nparks] WARNING: no items collected.');
 
   return items;
+}
+
+export async function scrapeActiveSGCircleEvents({
+  dateMs = Date.now(),
+  types = ['Races', 'Runs'],
+  filter = 'All',
+  headless = true,
+} = {}) {
+  const BASE = 'https://www.activesgcircle.gov.sg';
+  const url =
+    `${BASE}/things-to-do/events` +
+    `?date=${dateMs}&filter=${encodeURIComponent(filter)}` +
+    `&type=${encodeURIComponent(types.join(','))}&s=`;
+
+  let browser;
+  try {
+    browser = await puppeteer.launch({ headless });
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Safari/537.36'
+    );
+
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+    // Wait for the container to exist, then for cards to be injected.
+    await page.waitForSelector('#oneDay', { timeout: 20000 });
+    await page.waitForFunction(
+      () => document.querySelectorAll('#oneDay .outerDiv').length > 0,
+      { timeout: 25000 }
+    );
+
+    const items = await page.evaluate((BASE) => {
+      const ABS = (u) => {
+        try { return new URL(u, BASE).href; } catch { return u || ''; }
+      };
+      const getText = (el, sel) =>
+        (el.querySelector(sel)?.textContent || '').trim();
+
+      // Add year if missing: prefer Google/Outlook calendar links, then hidden epoch, then year in title.
+      const addYear = (row, title, dateText) => {
+        if (!dateText) return dateText;
+
+        // If date already has a year, return as-is.
+        if (/\b20\d{2}\b/.test(dateText)) return dateText;
+
+        // 1) Try Google calendar link (dates=YYYYMMDD…)
+        let year = '';
+        const gHref = row.querySelector('.google-calendar')?.getAttribute('href') || '';
+        const mG = gHref.match(/dates=(\d{4})\d{4}/i);
+        if (mG) year = mG[1];
+
+        // 2) Try Outlook link (startdt=YYYY-…)
+        if (!year) {
+          const oHref = row.querySelector('.outlook-calendar')?.getAttribute('href') || '';
+          const mO = oHref.match(/startdt=(\d{4})-/i);
+          if (mO) year = mO[1];
+        }
+
+        // 3) Try hidden epoch timestamp (child span under .cal-right)
+        if (!year) {
+          const tsRaw = (row.querySelector('.cal-right.right > span[style*="display:none"]')?.textContent || '').trim();
+          const tsNum = parseInt(tsRaw, 10);
+          if (!Number.isNaN(tsNum) && tsRaw.length >= 12) {
+            const d = new Date(tsNum);
+            year = String(d.getFullYear());
+          }
+        }
+
+        // 4) Try year in title (e.g., "... 2025")
+        if (!year) {
+          const mT = (title || '').match(/\b(20\d{2})\b/);
+          if (mT) year = mT[1];
+        }
+
+        if (!year) return dateText;
+
+        // Insert year per segment. For ranges, add year to both sides.
+        if (dateText.includes('-')) {
+          return dateText.replace(/\b(\d{1,2}\s+\w{3})\b/g, `$1 ${year}`);
+        }
+        return `${dateText} ${year}`;
+      };
+
+      const cards = Array.from(document.querySelectorAll('#oneDay .outerDiv'));
+      const out = [];
+
+      for (constwrap of cards) {
+        const row = constwrap.querySelector('.cal_item-row') || constwrap;
+
+        const title = getText(row, '.cal-title');
+        const description = getText(row, '.more-info-wrap .desc');
+        const imgUrl = row.querySelector('.img img')?.getAttribute('src') || '';
+
+        // Dates: single-day vs multi-day
+        let dateText = '';
+        const single = getText(row, '.common-date .date b'); // e.g. "02 Nov"
+        if (single) {
+          dateText = single;
+        } else {
+          const sDate = getText(row, '.date-wrap .sDate b') || getText(row, '.date-wrap .sDate .b-date b');
+          const eDate = getText(row, '.date-wrap .eDate b') || getText(row, '.date-wrap .eDate .b-date b');
+          if (sDate && eDate) {
+            dateText = `${sDate} - ${eDate}`;
+          } else if (sDate) {
+            dateText = sDate;
+          }
+        }
+
+        // Time (if present)
+        const timeText = getText(row, '.time').replace(/\s+/g, ' ').trim();
+        let dateTime = addYear(row, title, dateText);
+        if (timeText) dateTime = `${dateTime} ${timeText}`.trim();
+
+        const a = row.querySelector('.read-more-wrap a.read-more, .read-more-wrap a.thingstodo-listing-btn') || row.querySelector('a.thingstodo-listing-btn');
+        const href = ABS(a?.getAttribute('href') || '');
+
+        out.push({
+          title,
+          description,
+          dateTime,
+          imgUrl,
+          href,
+          fee: 'Click for more info',
+          source: 'activesg',
+        });
+      }
+
+      return out;
+    }, BASE);
+
+    return items.map(normalize);
+  } finally {
+    if (browser) await browser.close();
+  }
 }
