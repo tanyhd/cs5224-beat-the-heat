@@ -16,6 +16,9 @@ export interface BBox {
   maxLat: number;
 }
 
+// Simple in-memory cache for fetched tiles to avoid redundant network requests
+const tileCache = new Map<string, TreePointFeature[]>();
+
 /** meters → degrees (rough conversion; ok for Singapore-scale buffers) */
 function metersToDeg(m: number) {
   const deg = m / 111_320; // ~111.32km per degree
@@ -66,9 +69,26 @@ async function fetchTile(
   key: string
 ): Promise<TreeFeatureCollection> {
   const url = `${baseUrl}/${key}.json`;
+
+  // Return cached copy when available
+  if (tileCache.has(key)) {
+    return { type: "FeatureCollection", features: tileCache.get(key)! };
+  }
+
   const r = await fetch(url, { cache: "force-cache" });
   if (!r.ok) throw new Error(`Tile fetch failed: ${url} ${r.status}`);
-  return r.json();
+  const json = await r.json();
+
+  // Store into cache for future calls
+  try {
+    if (json?.features && Array.isArray(json.features)) {
+      tileCache.set(key, json.features);
+    }
+  } catch (e) {
+    // swallow cache store issues
+  }
+
+  return json;
 }
 
 /** Fetch only tiles intersecting the route bbox (with buffer), merge features */
@@ -78,8 +98,21 @@ export async function fetchTreesForRouteTiles(opts: {
   path: google.maps.LatLng[]; // overview_path from Directions
   bufferMeters?: number; // default 100m
   concurrency?: number; // default 6
+  // Optional: allow pre-filtering within the tile fetch by passing the route path
+  // and a threshold in meters. This prevents loading large numbers of irrelevant
+  // tree features into memory and speeds up downstream filtering.
+  routePath?: google.maps.LatLng[];
+  thresholdMeters?: number;
 }): Promise<TreePointFeature[]> {
-  const { baseUrl, tileDeg, path, bufferMeters = 100, concurrency = 6 } = opts;
+  const {
+    baseUrl,
+    tileDeg,
+    path,
+    bufferMeters = 100,
+    concurrency = 6,
+    routePath,
+    thresholdMeters,
+  } = opts;
   if (!path || path.length === 0) return [];
   const bbox = bboxOfRoute(path, bufferMeters);
   const keys = tileKeysForBBox(bbox, tileDeg);
@@ -92,7 +125,27 @@ export async function fetchTreesForRouteTiles(opts: {
       const k = queue.shift()!;
       try {
         const tile = await fetchTile(baseUrl, k);
-        if (tile?.features?.length) features.push(...tile.features);
+        if (!tile?.features?.length) continue;
+
+        // If caller provided a routePath and thresholdMeters, pre-filter features
+        // here to avoid pushing large numbers of irrelevant points.
+        if (routePath && typeof thresholdMeters === "number") {
+          const kept: TreePointFeature[] = [];
+          for (const f of tile.features) {
+            const [lng, lat] = f.geometry.coordinates;
+            const d = distanceToRouteMeters(
+              { lat, lng },
+              routePath.map((p) => ({ lat: p.lat(), lng: p.lng() }))
+            );
+            if (d <= thresholdMeters + 20) {
+              // keep a small leeway (+20m) so we don't drop borderline trees
+              kept.push(f);
+            }
+          }
+          if (kept.length) features.push(...kept);
+        } else {
+          features.push(...tile.features);
+        }
       } catch {
         // swallow individual tile errors for robustness
       }
@@ -125,8 +178,6 @@ export function distanceToRouteMeters(
     // A simpler & accurate approach: sample nearest point by parameter t in [0,1].
 
     // Convert to google LatLng for computeDistanceBetween
-    const A = new google.maps.LatLng(a.lat, a.lng);
-    const B = new google.maps.LatLng(b.lat, b.lng);
     const P = new google.maps.LatLng(point.lat, point.lng);
 
     // Parametric projection using linear interpolation in lat/lng (small-segment approximation)
