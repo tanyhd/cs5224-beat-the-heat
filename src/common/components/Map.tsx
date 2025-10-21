@@ -13,7 +13,6 @@ import {
   loadShelteredLinkwayData,
   convertShelteredLinkwayToGoogleMapsPolygons,
   selectOptimalLinkwayWaypoints,
-  svy21ToWGS84,
   type ShelteredLinkwayData,
   type ShelteredLinkwayFeature,
   type LatLngCoordinate,
@@ -73,17 +72,19 @@ const Map: React.FC = () => {
   const [filteredLinkways, setFilteredLinkways] = useState<
     ShelteredLinkwayFeature[]
   >([]);
-  const [originCoords, setOriginCoords] = useState<LatLngCoordinate | null>(
-    null
-  );
-  const [destCoords, setDestCoords] = useState<LatLngCoordinate | null>(null);
-  const [autoAddLinkwayWaypoints, setAutoAddLinkwayWaypoints] =
-    useState<boolean>(true);
+  // origin/destination coords are captured during route calc but not used elsewhere
+  const [autoAddLinkwayWaypoints] = useState<boolean>(true);
   const [optimalWaypoints, setOptimalWaypoints] = useState<LatLngCoordinate[]>(
     []
   );
-  const [showTrees, setShowTrees] = useState<boolean>(false);
+  const [showTrees] = useState<boolean>(false);
   const [routeTrees, setRouteTrees] = useState<TreePointFeature[]>([]);
+  const [selectedTreeIndex, setSelectedTreeIndex] = useState<number | null>(
+    null
+  );
+  // keep setters for origin/dest coords used during route calculation
+  const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
+  const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -157,6 +158,26 @@ const Map: React.FC = () => {
     },
     [isLoaded]
   );
+
+  // Function to get route details (duration, distance) for a specific route
+  const getRouteDetails = useCallback((route: google.maps.DirectionsRoute) => {
+    if (!route.legs) return { duration: "", distance: "" };
+
+    let totalDuration = 0;
+    let totalDistance = 0;
+
+    route.legs.forEach((leg) => {
+      if (leg.duration?.value) totalDuration += leg.duration.value;
+      if (leg.distance?.value) totalDistance += leg.distance.value;
+    });
+
+    const hours = Math.floor(totalDuration / 3600);
+    const minutes = Math.floor((totalDuration % 3600) / 60);
+    const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+    const distanceText = `${(totalDistance / 1000).toFixed(1)} km`;
+
+    return { duration: durationText, distance: distanceText };
+  }, []);
 
   const calculateRoute = useCallback(async () => {
     if (!origin || !destination) {
@@ -360,7 +381,7 @@ const Map: React.FC = () => {
               `Recalculating route with ${linkwayWaypointObjects.length} optimal linkway waypoints (filtered from ${filtered.length} candidates)`
             );
 
-            // Recalculate route with optimal linkway waypoints
+            // Recalculate route with optimal linkways
             const resultsWithLinkways = await directionsService.route({
               origin: origin,
               destination: destination,
@@ -370,35 +391,36 @@ const Map: React.FC = () => {
               provideRouteAlternatives: true,
             });
 
-            setDirectionsResponse(resultsWithLinkways);
-            setRouteOptions(resultsWithLinkways.routes || []);
+            // Merge original routes with augmented (linkway) routes instead of replacing them.
+            // This preserves the original alternatives so users can still select them.
+            const originalRoutes = results.routes || [];
+            const augmentedRoutes = resultsWithLinkways.routes || [];
+            const mergedRoutes = [...originalRoutes, ...augmentedRoutes];
+
+            // Build a merged DirectionsResult object (we keep the recalculated result as base
+            // but overwrite routes to include both sets). This is sufficient for rendering
+            // and for route selection via routeIndex.
+            const mergedDirectionsResult = {
+              ...resultsWithLinkways,
+              routes: mergedRoutes,
+            } as unknown as google.maps.DirectionsResult;
+
+            setDirectionsResponse(mergedDirectionsResult);
+            setRouteOptions(mergedRoutes);
+            // Keep the original route as the first selectable option
             setSelectedRouteIndex(0);
 
-            // Set initial duration and distance for the first route
-            if (resultsWithLinkways.routes && resultsWithLinkways.routes[0]) {
-              const details = getRouteDetails(resultsWithLinkways.routes[0]);
+            // Update duration/distance using the primary (original) route to avoid surprising the user
+            if (mergedRoutes[0]) {
+              const details = getRouteDetails(mergedRoutes[0]);
               setDuration(details.duration);
               setDistance(details.distance);
             }
 
-            // Fetch trees along the updated route
-            if (resultsWithLinkways.routes[0]?.overview_path) {
-              // 1) fetch only intersecting tiles
-              const tileTrees = await fetchTreesForRouteTiles({
-                baseUrl: TREES_TILE_BASE,
-                tileDeg: TREES_TILE_DEG,
-                path: resultsWithLinkways.routes[0].overview_path,
-                bufferMeters: TREES_BUFFER_M,
-              });
-
-              // 2) keep only trees within 10 m of the actual route polyline
-              const near = filterTreesByDistanceToRoute({
-                trees: tileTrees,
-                routePath: resultsWithLinkways.routes[0].overview_path,
-                thresholdMeters: TREES_NEAR_M,
-              });
-              setRouteTrees(near);
-            }
+            // Note: we intentionally do NOT re-fetch trees for the augmented recalculation.
+            // The initial tree fetch (performed earlier for `results`) remains in `routeTrees`.
+            // Fetching trees again here would overwrite the user's currently visible set and is
+            // unnecessary for preserving alternative route options in the UI.
           }
         }
       }
@@ -413,6 +435,7 @@ const Map: React.FC = () => {
     geocodeAddress,
     shelteredLinkwayData,
     autoAddLinkwayWaypoints,
+    getRouteDetails,
   ]);
 
   const clearRoute = useCallback(() => {
@@ -432,26 +455,6 @@ const Map: React.FC = () => {
     setRouteTrees([]);
   }, []);
 
-  // Function to get route details (duration, distance) for a specific route
-  const getRouteDetails = useCallback((route: google.maps.DirectionsRoute) => {
-    if (!route.legs) return { duration: "", distance: "" };
-
-    let totalDuration = 0;
-    let totalDistance = 0;
-
-    route.legs.forEach((leg) => {
-      if (leg.duration?.value) totalDuration += leg.duration.value;
-      if (leg.distance?.value) totalDistance += leg.distance.value;
-    });
-
-    const hours = Math.floor(totalDuration / 3600);
-    const minutes = Math.floor((totalDuration % 3600) / 60);
-    const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-    const distanceText = `${(totalDistance / 1000).toFixed(1)} km`;
-
-    return { duration: durationText, distance: distanceText };
-  }, []);
-
   // Function to select a route
   const selectRoute = useCallback(
     (index: number) => {
@@ -465,35 +468,31 @@ const Map: React.FC = () => {
     [routeOptions, getRouteDetails]
   );
 
-  // Wrapped button handlers with logging
-  const calculateRouteWithLogging = useCallback(
-    logButtonClick("Calculate Route", calculateRoute),
-    [calculateRoute]
+  // Wrapped button handlers with logging (no hook indirection)
+  const calculateRouteWithLogging = logButtonClick(
+    "Calculate Route",
+    calculateRoute
   );
 
-  const clearRouteWithLogging = useCallback(
-    logButtonClick("Clear Route", clearRoute),
-    [clearRoute]
-  );
+  const clearRouteWithLogging = logButtonClick("Clear Route", clearRoute);
 
-  const testFilterWithLogging = useCallback(
-    logButtonClick("Test Filter", () => {
-      if (shelteredLinkwayData) {
-        // Test with Marina Bay to Raffles Place
-        const testOrigin = { lat: 1.2834, lng: 103.8607 };
-        const testDest = { lat: 1.2844, lng: 103.8507 };
-        const filtered = filterShelteredLinkwaysInBoundary(
-          testOrigin,
-          testDest,
-          shelteredLinkwayData,
-          { bufferDistance: 200, maxResults: 10, strictFiltering: true }
-        );
-        console.log("Test filtering result:", filtered.length);
-        setFilteredLinkways(filtered);
-      }
-    }),
-    [shelteredLinkwayData]
-  );
+  /*
+  const testFilterWithLogging = logButtonClick("Test Filter", () => {
+    if (shelteredLinkwayData) {
+      // Test with Marina Bay to Raffles Place
+      const testOrigin = { lat: 1.2834, lng: 103.8607 };
+      const testDest = { lat: 1.2844, lng: 103.8507 };
+      const filtered = filterShelteredLinkwaysInBoundary(
+        testOrigin,
+        testDest,
+        shelteredLinkwayData,
+        { bufferDistance: 200, maxResults: 10, strictFiltering: true }
+      );
+      console.log("Test filtering result:", filtered.length);
+      setFilteredLinkways(filtered);
+    }
+  });
+  */
 
   const onMapClick = useCallback((event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
@@ -504,6 +503,98 @@ const Map: React.FC = () => {
       setMarkers((prev) => [...prev, newMarker]);
     }
   }, []);
+
+  // Keep a ref to the google.maps.Map instance so we can add a Data layer for trees
+  const mapRef = useRef<google.maps.Map | null>(null);
+  const selectedTreeIndexRef = useRef<number | null>(null);
+
+  const updateSelectedTreeStyling = useCallback(
+    (selectedIdx: number | null) => {
+      if (!mapRef.current) return;
+      mapRef.current.data.forEach((feature: google.maps.Data.Feature) => {
+        const featureIdx = feature.getProperty("treeIndex");
+        const isSelected =
+          typeof featureIdx === "number" && featureIdx === selectedIdx;
+        feature.setProperty("selected", isSelected);
+      });
+    },
+    []
+  );
+
+  selectedTreeIndexRef.current = selectedTreeIndex;
+
+  // When routeTrees or showTrees changes, update the map.data layer (debounced)
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // Debounce rapid updates to avoid repeated heavy map.data operations
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const updateDataLayer = () => {
+      const map = mapRef.current!;
+      // Clear existing data features quickly (use forEach remove which is standard)
+      if (map.data) {
+        map.data.forEach((feature) =>
+          map.data.remove(feature as google.maps.Data.Feature)
+        );
+      } else {
+        // Fallback: call clear if available on this runtime
+        const dataAny = map.data as unknown as { clear?: () => void };
+        dataAny.clear?.();
+      }
+
+      if (!showTrees || !routeTrees || routeTrees.length === 0) return;
+
+      // Build a lightweight GeoJSON FeatureCollection from routeTrees
+      const currentSelection = selectedTreeIndexRef.current ?? null;
+      const geojson = {
+        type: "FeatureCollection",
+        features: routeTrees.map((f, idx) => ({
+          type: "Feature",
+          properties: {
+            ...(f.properties || {}),
+            treeIndex: idx,
+            selected: currentSelection === idx,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: f.geometry.coordinates,
+          },
+        })),
+      } as unknown as object;
+
+      try {
+        // addGeoJson typing is loose across versions; cast via unknown to avoid `any` lint
+        map.data.addGeoJson(geojson as unknown as google.maps.Data.Feature[]);
+        // Style features; selected trees render larger and in red
+        map.data.setStyle((feature: google.maps.Data.Feature) => {
+          const sel = feature.getProperty("selected") === true;
+          return {
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: sel ? 6 : 4,
+              fillColor: sel ? "#FF3333" : "#228B22",
+              fillOpacity: 0.9,
+              strokeWeight: 0,
+            },
+          } as google.maps.Data.StyleOptions;
+        });
+        updateSelectedTreeStyling(currentSelection);
+      } catch (error) {
+        console.error("Failed to update map.data layer for trees:", error);
+      }
+    };
+
+    timer = setTimeout(updateDataLayer, 80); // short debounce
+
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [routeTrees, showTrees, updateSelectedTreeStyling]);
+
+  useEffect(() => {
+    updateSelectedTreeStyling(selectedTreeIndex);
+  }, [selectedTreeIndex, updateSelectedTreeStyling]);
 
   return isLoaded ? (
     <div>
@@ -589,6 +680,7 @@ const Map: React.FC = () => {
           >
             Clear
           </button>
+          {/*
           <button
             onClick={testFilterWithLogging}
             style={{
@@ -599,9 +691,11 @@ const Map: React.FC = () => {
           >
             Test Filter
           </button>
+          */}
         </div>
 
-        {/* Auto-add linkway waypoints toggle */}
+        {/*
+        Auto-add linkway waypoints toggle (disabled per request)
         <div style={{ marginBottom: "10px" }}>
           <label
             style={{
@@ -628,8 +722,10 @@ const Map: React.FC = () => {
             </span>
           </label>
         </div>
+        */}
 
-        {/* Show Trees toggle */}
+        {/*
+        Show Trees toggle (disabled per request)
         <div style={{ marginBottom: "10px" }}>
           <label
             style={{
@@ -648,6 +744,7 @@ const Map: React.FC = () => {
             <span style={{ color: "#333" }}>Show Trees along route</span>
           </label>
         </div>
+        */}
         {routeOptions.length > 0 && (
           <div style={{ marginBottom: "10px" }}>
             <h3 style={{ marginBottom: "5px", fontWeight: "bold" }}>
@@ -705,6 +802,56 @@ const Map: React.FC = () => {
         center={center}
         zoom={11}
         onClick={onMapClick}
+        onLoad={(map) => {
+          mapRef.current = map;
+          // Attach instrumentation and click handlers to the Data layer once
+          try {
+            if (map.data) {
+              // Log when features are added/removed
+              map.data.addListener(
+                "addfeature",
+                (e: { feature: google.maps.Data.Feature }) => {
+                  try {
+                    const id = e.feature.getProperty("treeIndex");
+                    console.debug("map.data addfeature -> treeIndex:", id);
+                  } catch (err) {
+                    console.debug("map.data addfeature (no treeIndex)", err);
+                  }
+                }
+              );
+              map.data.addListener(
+                "removefeature",
+                (e: { feature: google.maps.Data.Feature }) => {
+                  try {
+                    const id = e.feature.getProperty("treeIndex");
+                    console.debug("map.data removefeature -> treeIndex:", id);
+                  } catch (err) {
+                    console.debug("map.data removefeature (no treeIndex)", err);
+                  }
+                }
+              );
+
+              // Click handler to highlight a tree (preserve selection state in React)
+              map.data.addListener(
+                "click",
+                (e: google.maps.Data.MouseEvent) => {
+                  if (!e.feature) return;
+                  const idx = e.feature.getProperty("treeIndex");
+                  console.debug("map.data click -> treeIndex:", idx);
+                  setSelectedTreeIndex(typeof idx === "number" ? idx : null);
+                  updateSelectedTreeStyling(
+                    typeof idx === "number" ? idx : null
+                  );
+                }
+              );
+            }
+          } catch (err) {
+            console.warn("Failed to attach map.data listeners:", err);
+          }
+        }}
+        onUnmount={() => {
+          mapRef.current = null;
+        }}
       >
         {/* Render route if available */}
         {directionsResponse && routeOptions.length > 0 && (
@@ -764,24 +911,7 @@ const Map: React.FC = () => {
           />
         ))}
 
-        {/* Trees from tiles — only show when toggled on */}
-        {showTrees &&
-          routeTrees.map((f, i) => {
-            const [lng, lat] = f.geometry.coordinates;
-            return (
-              <Marker
-                key={`tree-${i}`}
-                position={{ lat, lng }}
-                icon={{
-                  path: google.maps.SymbolPath.CIRCLE,
-                  scale: 4,
-                  fillColor: "#228B22",
-                  fillOpacity: 0.85,
-                  strokeWeight: 0,
-                }}
-              />
-            );
-          })}
+        {/* Trees are rendered via map.data layer for performance (see useEffect update) */}
       </GoogleMap>
     </div>
   ) : (
@@ -790,3 +920,4 @@ const Map: React.FC = () => {
 };
 
 export { Map };
+export default Map;
