@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkUserToken, getCreditCardsInfo } from '../../../services/mongodb';
+import { checkUserToken } from '../../../services/mongodb';
 
 export async function POST(req) {
     const authHeader = req.headers.get('authorization');
@@ -13,7 +13,7 @@ export async function POST(req) {
         return NextResponse.json({ message: 'Invalid or expired token' }, { status: 401 });
     }
     console.log('userInfo', userInfo);
-    const result = await getCreditCardsInfo({userId: userInfo.userId});
+    const result = {} //  await getCreditCardsInfo({userId: userInfo.userId});
     if (result.status === '500') {
         return NextResponse.json({ message: result.message }, { status: 500 });
     }
