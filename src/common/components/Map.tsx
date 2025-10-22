@@ -495,22 +495,6 @@ const Map: React.FC = () => {
 
   const clearRouteWithLogging = logButtonClick("Clear Route", clearRoute);
 
-  const testFilterWithLogging = logButtonClick("Test Filter", () => {
-    if (shelteredLinkwayData) {
-      // Test with Marina Bay to Raffles Place
-      const testOrigin = { lat: 1.2834, lng: 103.8607 };
-      const testDest = { lat: 1.2844, lng: 103.8507 };
-      const filtered = filterShelteredLinkwaysInBoundary(
-        testOrigin,
-        testDest,
-        shelteredLinkwayData,
-        { bufferDistance: 200, maxResults: 10, strictFiltering: true }
-      );
-      console.log("Test filtering result:", filtered.length);
-      setFilteredLinkways(filtered);
-    }
-  });
-
   const onMapClick = useCallback((event: google.maps.MapMouseEvent) => {
     if (event.latLng) {
       const newMarker = {
@@ -697,43 +681,6 @@ const Map: React.FC = () => {
             Clear
           </button>
 
-          <button
-            onClick={testFilterWithLogging}
-            style={{
-              backgroundColor: "blue",
-              color: "white",
-              padding: "5px 15px",
-            }}
-          >
-            Test Filter
-          </button>
-        </div>
-        Auto-add linkway waypoints toggle (disabled per request)
-        <div style={{ marginBottom: "10px" }}>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              fontSize: "14px",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={autoAddLinkwayWaypoints}
-              onChange={(e) => setAutoAddLinkwayWaypoints(e.target.checked)}
-              style={{ margin: 0 }}
-            />
-            <span style={{ color: "#333" }}>
-              Automatically route through sheltered infrastructure
-            </span>
-            <span
-              style={{ color: "#666", fontSize: "12px", fontStyle: "italic" }}
-            >
-              (Routes will be optimized to pass through covered walkways,
-              linkways, and pedestrian bridges)
-            </span>
-          </label>
         </div>
         {/*
         Show Trees toggle (disabled per request)
