@@ -17,11 +17,6 @@ import {
   type ShelteredLinkwayFeature,
   type LatLngCoordinate,
 } from "@/common/utils/shelteredLinkway";
-import {
-  fetchTreesForRouteTiles,
-  filterTreesByDistanceToRoute,
-  type TreePointFeature,
-} from "@/common/utils/treeTiles";
 
 const containerStyle = {
   width: "100%",
@@ -77,11 +72,6 @@ const Map: React.FC = () => {
   const [optimalWaypoints, setOptimalWaypoints] = useState<LatLngCoordinate[]>(
     []
   );
-  // const [showTrees] = useState<boolean>(false);
-  // const [routeTrees, setRouteTrees] = useState<TreePointFeature[]>([]);
-  // const [selectedTreeIndex, setSelectedTreeIndex] = useState<number | null>(
-  //   null
-  // );
   // keep setters for origin/dest coords used during route calculation
   const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
   const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
@@ -94,11 +84,6 @@ const Map: React.FC = () => {
 
   const originRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destRef = useRef<google.maps.places.Autocomplete | null>(null);
-  // const TREES_TILE_BASE =
-  //   "https://beat-the-heat-data.s3.ap-southeast-2.amazonaws.com/datasets/trees/v1/tiles";
-  // const TREES_TILE_DEG = 0.01; // must match your chunk script
-  // const TREES_BUFFER_M = 100; // bbox buffer before precise filtering
-  // const TREES_NEAR_M = 10; // final distance-to-route threshold
 
   // Load sheltered linkway data on component mount
   useEffect(() => {
@@ -239,24 +224,6 @@ const Map: React.FC = () => {
         setDistance(details.distance);
       }
 
-      // // Fetch trees along the route if overview_path is available
-      // if (results.routes[0]?.overview_path) {
-      //   // 1) fetch only intersecting tiles
-      //   const tileTrees = await fetchTreesForRouteTiles({
-      //     baseUrl: TREES_TILE_BASE,
-      //     tileDeg: TREES_TILE_DEG,
-      //     path: results.routes[0].overview_path,
-      //     bufferMeters: TREES_BUFFER_M,
-      //   });
-
-      //   // 2) keep only trees within 10 m of the actual route polyline
-      //   const near = filterTreesByDistanceToRoute({
-      //     trees: tileTrees,
-      //     routePath: results.routes[0].overview_path,
-      //     thresholdMeters: TREES_NEAR_M,
-      //   });
-      //   setRouteTrees(near);
-      // }
 
       // Filter sheltered linkways and optionally add them as waypoints
       if (shelteredLinkwayData && originCoordinates && destCoordinates) {
@@ -422,24 +389,6 @@ const Map: React.FC = () => {
               setDuration(details.duration);
               setDistance(details.distance);
             }
-            // // Fetch trees along the updated route
-            // if (resultsWithLinkways.routes[0]?.overview_path) {
-            //   // 1) fetch only intersecting tiles
-            //   const tileTrees = await fetchTreesForRouteTiles({
-            //     baseUrl: TREES_TILE_BASE,
-            //     tileDeg: TREES_TILE_DEG,
-            //     path: resultsWithLinkways.routes[0].overview_path,
-            //     bufferMeters: TREES_BUFFER_M,
-            //   });
-
-            //   // 2) keep only trees within 10 m of the actual route polyline
-            //   const near = filterTreesByDistanceToRoute({
-            //     trees: tileTrees,
-            //     routePath: resultsWithLinkways.routes[0].overview_path,
-            //     thresholdMeters: TREES_NEAR_M,
-            //   });
-            //   setRouteTrees(near);
-            // }
           }
         }
       }
@@ -505,96 +454,6 @@ const Map: React.FC = () => {
     }
   }, []);
 
-  // const mapRef = useRef<google.maps.Map | null>(null);
-  // const selectedTreeIndexRef = useRef<number | null>(null);
-
-  // const updateSelectedTreeStyling = useCallback(
-  //   (selectedIdx: number | null) => {
-  //     if (!mapRef.current) return;
-  //     mapRef.current.data.forEach((feature: google.maps.Data.Feature) => {
-  //       const featureIdx = feature.getProperty("treeIndex");
-  //       const isSelected =
-  //         typeof featureIdx === "number" && featureIdx === selectedIdx;
-  //       feature.setProperty("selected", isSelected);
-  //     });
-  //   },
-  //   []
-  // );
-
-  // selectedTreeIndexRef.current = selectedTreeIndex;
-
-  // // When routeTrees or showTrees changes, update the map.data layer (debounced)
-  // useEffect(() => {
-  //   if (!mapRef.current) return;
-
-  //   // Debounce rapid updates to avoid repeated heavy map.data operations
-  //   let timer: ReturnType<typeof setTimeout> | null = null;
-
-  //   const updateDataLayer = () => {
-  //     const map = mapRef.current!;
-  //     // Clear existing data features quickly (use forEach remove which is standard)
-  //     if (map.data) {
-  //       map.data.forEach((feature) =>
-  //         map.data.remove(feature as google.maps.Data.Feature)
-  //       );
-  //     } else {
-  //       // Fallback: call clear if available on this runtime
-  //       const dataAny = map.data as unknown as { clear?: () => void };
-  //       dataAny.clear?.();
-  //     }
-
-  //     if (!showTrees || !routeTrees || routeTrees.length === 0) return;
-
-  //     // Build a lightweight GeoJSON FeatureCollection from routeTrees
-  //     const currentSelection = selectedTreeIndexRef.current ?? null;
-  //     const geojson = {
-  //       type: "FeatureCollection",
-  //       features: routeTrees.map((f, idx) => ({
-  //         type: "Feature",
-  //         properties: {
-  //           ...(f.properties || {}),
-  //           treeIndex: idx,
-  //           selected: currentSelection === idx,
-  //         },
-  //         geometry: {
-  //           type: "Point",
-  //           coordinates: f.geometry.coordinates,
-  //         },
-  //       })),
-  //     } as unknown as object;
-
-  //     try {
-  //       // addGeoJson typing is loose across versions; cast via unknown to avoid `any` lint
-  //       map.data.addGeoJson(geojson as unknown as google.maps.Data.Feature[]);
-  //       // Style features; selected trees render larger and in red
-  //       map.data.setStyle((feature: google.maps.Data.Feature) => {
-  //         const sel = feature.getProperty("selected") === true;
-  //         return {
-  //           icon: {
-  //             path: google.maps.SymbolPath.CIRCLE,
-  //             scale: sel ? 6 : 4,
-  //             fillColor: sel ? "#FF3333" : "#228B22",
-  //             fillOpacity: 0.9,
-  //             strokeWeight: 0,
-  //           },
-  //         } as google.maps.Data.StyleOptions;
-  //       });
-  //       updateSelectedTreeStyling(currentSelection);
-  //     } catch (error) {
-  //       console.error("Failed to update map.data layer for trees:", error);
-  //     }
-  //   };
-
-  //   timer = setTimeout(updateDataLayer, 80); // short debounce
-
-  //   return () => {
-  //     if (timer) clearTimeout(timer);
-  //   };
-  // }, [routeTrees, showTrees, updateSelectedTreeStyling]);
-
-  // useEffect(() => {
-  //   updateSelectedTreeStyling(selectedTreeIndex);
-  // }, [selectedTreeIndex, updateSelectedTreeStyling]);
 
   return isLoaded ? (
     <div>
@@ -682,27 +541,6 @@ const Map: React.FC = () => {
           </button>
 
         </div>
-        {/*
-        Show Trees toggle (disabled per request)
-        <div style={{ marginBottom: "10px" }}>
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              fontSize: "14px",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={showTrees}
-              onChange={(e) => setShowTrees(e.target.checked)}
-              style={{ margin: 0 }}
-            />
-            <span style={{ color: "#333" }}>Show Trees along route</span>
-          </label>
-        </div>
-        */}
         {routeOptions.length > 0 && (
           <div style={{ marginBottom: "10px" }}>
             <h3 style={{ marginBottom: "5px", fontWeight: "bold" }}>
@@ -760,56 +598,6 @@ const Map: React.FC = () => {
         center={center}
         zoom={11}
         onClick={onMapClick}
-        // onLoad={(map) => {
-        //   mapRef.current = map;
-        //   // Attach instrumentation and click handlers to the Data layer once
-        //   try {
-        //     if (map.data) {
-        //       // Log when features are added/removed
-        //       map.data.addListener(
-        //         "addfeature",
-        //         (e: { feature: google.maps.Data.Feature }) => {
-        //           try {
-        //             const id = e.feature.getProperty("treeIndex");
-        //             console.debug("map.data addfeature -> treeIndex:", id);
-        //           } catch (err) {
-        //             console.debug("map.data addfeature (no treeIndex)", err);
-        //           }
-        //         }
-        //       );
-        //       map.data.addListener(
-        //         "removefeature",
-        //         (e: { feature: google.maps.Data.Feature }) => {
-        //           try {
-        //             const id = e.feature.getProperty("treeIndex");
-        //             console.debug("map.data removefeature -> treeIndex:", id);
-        //           } catch (err) {
-        //             console.debug("map.data removefeature (no treeIndex)", err);
-        //           }
-        //         }
-        //       );
-
-        //       // Click handler to highlight a tree (preserve selection state in React)
-        //       map.data.addListener(
-        //         "click",
-        //         (e: google.maps.Data.MouseEvent) => {
-        //           if (!e.feature) return;
-        //           const idx = e.feature.getProperty("treeIndex");
-        //           console.debug("map.data click -> treeIndex:", idx);
-        //           setSelectedTreeIndex(typeof idx === "number" ? idx : null);
-        //           updateSelectedTreeStyling(
-        //             typeof idx === "number" ? idx : null
-        //           );
-        //         }
-        //       );
-        //     }
-        //   } catch (err) {
-        //     console.warn("Failed to attach map.data listeners:", err);
-        //   }
-        // }}
-        // onUnmount={() => {
-        //   mapRef.current = null;
-        // }}
       >
         {/* Render route if available */}
         {directionsResponse && routeOptions.length > 0 && (
