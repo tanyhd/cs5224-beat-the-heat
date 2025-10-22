@@ -14,7 +14,7 @@ export default function MapPage() {
     <div>
       <Breadcrumb links={MAP_BREADCRUMBS} />
       <Header
-        headerText="Map Search"
+        headerText="Breeze Navigator"
         captionText="Find sheltered routes through Singapore with covered walkways, linkways, and pedestrian bridges. Plan your journey to beat the heat!"
         containerClassName={styles.container}
       />
