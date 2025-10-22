@@ -18,9 +18,16 @@ import {
   type LatLngCoordinate,
 } from "@/common/utils/shelteredLinkway";
 
+import styles from "./Map.module.css";
+import PillToggle from "./PillTabs";
+import RouteMode from "../constants/routeMode";
+import Swap from "../icons/Swap";
+
 const containerStyle = {
   width: "100%",
   height: "400px",
+  borderRadius: "6px",
+  marginTop: "16px"
 };
 
 const center = {
@@ -75,6 +82,16 @@ const Map: React.FC = () => {
   // keep setters for origin/dest coords used during route calculation
   const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
   const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
+  const [routeMode, setRouteMode] = useState<google.maps.TravelMode>(
+    RouteMode.WALKING
+  );
+
+  const handleToggleChange = () => {
+    const toggledMode = routeMode === RouteMode.WALKING
+      ? RouteMode.BICYCLING
+      : RouteMode.WALKING;
+    setRouteMode(toggledMode);
+  };
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -423,6 +440,12 @@ const Map: React.FC = () => {
     // setRouteTrees([]);
   }, []);
 
+  const swapLocations = () => {
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
+  };
+
   // Function to select a route
   const selectRoute = useCallback(
     (index: number) => {
@@ -460,123 +483,142 @@ const Map: React.FC = () => {
       {/* Route Controls */}
       <div
         style={{
-          padding: "10px",
-          backgroundColor: "white",
-          marginBottom: "10px",
+          marginBottom: "16px",
+          borderRadius: "16px",
+          padding: "16px",
+          background: "#F5FFFE",
         }}
       >
-        <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
-          <Autocomplete
-            options={{
-              componentRestrictions: { country: "sg" },
-              fields: ["formatted_address", "geometry", "name"],
-            }}
-            onLoad={(autocomplete) => (originRef.current = autocomplete)}
-            onPlaceChanged={() => {
-              const place = originRef.current?.getPlace();
-              if (place?.geometry?.location) {
-                setOrigin(place.formatted_address || place.name || "");
-              }
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Origin"
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              style={{
-                backgroundColor: "#F5F5F5",
-                color: "black",
-                padding: "5px",
-                flex: 1,
-              }}
-            />
-          </Autocomplete>
+        <div style={{ color: "#064E3B", fontWeight: "bold" }}>Plan your route</div>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px", width: "75%" }}>
+            <div style={{ display: "flex", gap: "10px", flex: 1}}>
+              <Autocomplete
+                className={styles.autocomplete}
+                options={{
+                  componentRestrictions: { country: "sg" },
+                  fields: ["formatted_address", "geometry", "name"],
+                }}
+                onLoad={(autocomplete) => (originRef.current = autocomplete)}
+                onPlaceChanged={() => {
+                  const place = originRef.current?.getPlace();
+                  if (place?.geometry?.location) {
+                    setOrigin(place.formatted_address || place.name || "");
+                  }
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Origin"
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  style={{
+                    backgroundColor: "#FFF",
+                    color: "black",
+                    padding: "5px",
+                    flex: 1,
+                    borderRadius: "48px",
+                    border: "3px solid #D1EEF8",
+                    width: "100%"
+                  }}
+                />
+              </Autocomplete>
 
-          <Autocomplete
-            options={{
-              componentRestrictions: { country: "sg" },
-              fields: ["formatted_address", "geometry", "name"],
-            }}
-            onLoad={(autocomplete) => (destRef.current = autocomplete)}
-            onPlaceChanged={() => {
-              const place = destRef.current?.getPlace();
-              if (place?.geometry?.location) {
-                setDestination(place.formatted_address || place.name || "");
-              }
-            }}
-          >
-            <input
-              type="text"
-              placeholder="Destination"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              style={{
-                backgroundColor: "#F5F5F5",
-                color: "black",
-                padding: "5px",
-                flex: 1,
-              }}
-            />
-          </Autocomplete>
+              <div 
+                onClick={swapLocations}
+                style={{ 
+                  cursor: "pointer", 
+                  color: "#064E3B", 
+                  fontWeight: "bold",
+                  backgroundColor: "#F3F9FB",
+                  borderRadius: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "32px",
+                  height: "32px",
+                  padding: "4px",
+                }}
+              ><Swap /></div>
+
+              <Autocomplete
+                className={styles.autocomplete}
+                options={{
+                  componentRestrictions: { country: "sg" },
+                  fields: ["formatted_address", "geometry", "name"],
+                }}
+                onLoad={(autocomplete) => (destRef.current = autocomplete)}
+                onPlaceChanged={() => {
+                  const place = destRef.current?.getPlace();
+                  if (place?.geometry?.location) {
+                    setDestination(place.formatted_address || place.name || "");
+                  }
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Destination"
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
+                  style={{
+                    backgroundColor: "#FFF",
+                    color: "black",
+                    padding: "5px",
+                    flex: 1,
+                    borderRadius: "48px",
+                    border: "3px solid #D1EEF8",
+                    width: "100%"
+                  }}
+                />
+              </Autocomplete>
+            </div>
+          </div>
+          <div>
+            <PillToggle 
+              tabs={[{
+                id: RouteMode.WALKING,
+                label: "Walking",
+                content: null,
+              }, {
+                id: RouteMode.BICYCLING,
+                label: "Bicycling",
+                content: null,
+              }]} onChange={handleToggleChange} />
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "10px"}}>
           <button
             onClick={calculateRouteWithLogging}
             style={{
-              backgroundColor: "black",
+              backgroundColor: "#06B6D4",
               color: "white",
-              padding: "5px 15px",
+              borderRadius: "16px",
+              padding: "8px 16px",
+              width: "80%",
+              border: "none",
+              fontWeight: "bold",
+              cursor: "pointer",
             }}
           >
-            Calculate Route
+            Find Cooler Route
           </button>
           <button
             onClick={clearRouteWithLogging}
             style={{
-              backgroundColor: "black",
-              color: "white",
-              padding: "5px 15px",
+              backgroundColor: "#EFFCFB",
+              color: "#064E3B",
+              padding: "8px 16px",
+              width: "20%",
+              borderRadius: "16px",
+              border: "none",
+              fontWeight: "bold",
+              cursor: "pointer",
             }}
           >
             Clear
           </button>
-
         </div>
-        {routeOptions.length > 0 && (
-          <div style={{ marginBottom: "10px" }}>
-            <h3 style={{ marginBottom: "5px", fontWeight: "bold" }}>
-              Route Options:
-            </h3>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-              {routeOptions
-                .slice(
-                  0,
-                  parseInt(process.env.NEXT_PUBLIC_MAX_ROUTE_OPTIONS || "2")
-                )
-                .map((route, index) => {
-                  const details = getRouteDetails(route);
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => selectRoute(index)}
-                      style={{
-                        padding: "8px 12px",
-                        backgroundColor:
-                          selectedRouteIndex === index ? "#007bff" : "#f8f9fa",
-                        color: selectedRouteIndex === index ? "white" : "black",
-                        border: "1px solid #ddd",
-                        borderRadius: "4px",
-                        cursor: "pointer",
-                        fontSize: "14px",
-                      }}
-                    >
-                      Option {index + 1}: {details.duration} |{" "}
-                      {details.distance}
-                    </button>
-                  );
-                })}
-            </div>
-          </div>
-        )}
+
         {duration && distance && (
           <div>
             <p>
@@ -593,70 +635,112 @@ const Map: React.FC = () => {
       </div>
 
       {/* Map */}
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={11}
-        onClick={onMapClick}
-      >
-        {/* Render route if available */}
-        {directionsResponse && routeOptions.length > 0 && (
-          <DirectionsRenderer
-            directions={directionsResponse}
-            routeIndex={selectedRouteIndex}
-            options={{
-              suppressMarkers: false,
-            }}
-          />
+      <div style={{
+        borderRadius: "16px",
+        border: "3px solid #D1EEF8",
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        padding: "16px",
+        background: "#FFFFFF",
+      }} >
+        {routeOptions.length > 0 && (
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {routeOptions
+                .slice(
+                  0,
+                  parseInt(process.env.NEXT_PUBLIC_MAX_ROUTE_OPTIONS || "2")
+                )
+                .map((route, index) => {
+                  const details = getRouteDetails(route);
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => selectRoute(index)}
+                      style={{
+                        padding: "8px 12px",
+                        backgroundColor:
+                          selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB",
+                        color: selectedRouteIndex === index ? "#FFF" : "#064E3B",
+                        fontWeight: "bold",
+                        border: "1px solid #ddd",
+                        borderRadius: "48px",
+                        cursor: "pointer",
+                        fontSize: "14px",
+                      }}
+                    >
+                      Option {index + 1}: {details.duration} |{" "}
+                      {details.distance}
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
         )}
-
-        {/* Render sheltered linkway polygons */}
-        {filteredLinkways.length > 0 &&
-          convertShelteredLinkwayToGoogleMapsPolygons(filteredLinkways).map(
-            (polygonPath, index) => (
-              <Polygon
-                key={`linkway-${index}`}
-                paths={polygonPath}
-                options={{
-                  fillColor: "#00ff00",
-                  fillOpacity: 0.3,
-                  strokeColor: "#00aa00",
-                  strokeOpacity: 0.8,
-                  strokeWeight: 2,
-                }}
-              />
-            )
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={11}
+          onClick={onMapClick}
+        >
+          {/* Render route if available */}
+          {directionsResponse && routeOptions.length > 0 && (
+            <DirectionsRenderer
+              directions={directionsResponse}
+              routeIndex={selectedRouteIndex}
+              options={{
+                suppressMarkers: false,
+              }}
+            />
           )}
 
-        {/* Render clicked markers */}
-        {markers.map((marker, index) => (
-          <Marker key={index} position={marker} />
-        ))}
+          {/* Render sheltered linkway polygons */}
+          {filteredLinkways.length > 0 &&
+            convertShelteredLinkwayToGoogleMapsPolygons(filteredLinkways).map(
+              (polygonPath, index) => (
+                <Polygon
+                  key={`linkway-${index}`}
+                  paths={polygonPath}
+                  options={{
+                    fillColor: "#00ff00",
+                    fillOpacity: 0.3,
+                    strokeColor: "#00aa00",
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                  }}
+                />
+              )
+            )}
 
-        {/* Render optimal waypoint markers */}
-        {optimalWaypoints.map((waypoint, index) => (
-          <Marker
-            key={`waypoint-${index}`}
-            position={waypoint}
-            icon={{
-              url:
-                "data:image/svg+xml;charset=UTF-8," +
-                encodeURIComponent(`
-                <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="10" cy="10" r="8" fill="#FF6B35" stroke="white" stroke-width="2"/>
-                  <text x="10" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${
-                    index + 1
-                  }</text>
-                </svg>
-              `),
-              scaledSize: new google.maps.Size(20, 20),
-            }}
-            title={`Optimal Waypoint ${index + 1}: ${waypoint.lat.toFixed(
-              6
-            )}, ${waypoint.lng.toFixed(6)}`}
-          />
-        ))}
-      </GoogleMap>
+          {/* Render clicked markers */}
+          {markers.map((marker, index) => (
+            <Marker key={index} position={marker} />
+          ))}
+
+          {/* Render optimal waypoint markers */}
+          {optimalWaypoints.map((waypoint, index) => (
+            <Marker
+              key={`waypoint-${index}`}
+              position={waypoint}
+              icon={{
+                url:
+                  "data:image/svg+xml;charset=UTF-8," +
+                  encodeURIComponent(`
+                  <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="8" fill="#FF6B35" stroke="white" stroke-width="2"/>
+                    <text x="10" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${
+                      index + 1
+                    }</text>
+                  </svg>
+                `),
+                scaledSize: new google.maps.Size(20, 20),
+              }}
+              title={`Optimal Waypoint ${index + 1}: ${waypoint.lat.toFixed(
+                6
+              )}, ${waypoint.lng.toFixed(6)}`}
+            />
+          ))}
+        </GoogleMap>
+      </div>
     </div>
   ) : (
     <div>Loading Map...</div>
