@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "mongo beat_the_heat scripts/init.mongo.js && next build && next start",
+    "start": "next start -H 0.0.0.0 -p ${PORT:-8080}",
     "lint": "next lint"
   },
   "dependencies": {
