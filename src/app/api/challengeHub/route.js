@@ -3,7 +3,7 @@ import { findAllScrapedData } from "../../../services/mongodb";
 import { saveScrapedData } from '../../../services/mongodb';
 import { scrapeActiveSGCircleEvents, scrapeHealthHubProgrammes, scrapeNparksEvents } from '../../../services/scrape';
 
-const settledToArray = (res, label) => {
+export const settledToArray = (res, label) => {
   if (res.status === 'fulfilled') {
     if (Array.isArray(res.value)) return res.value;
     console.warn(`[scrape] ${label} returned non-array, coercing to []`);
