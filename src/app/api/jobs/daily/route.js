@@ -3,12 +3,13 @@ import {
   scrapeActiveSGCircleEvents,
   scrapeHealthHubProgrammes,
   scrapeNparksEvents,
+  settledToArray,
 } from "@/services/scrape";
 import { saveScrapedData } from "@/services/mongodb";
-import { settledToArray } from "../../challengeHub/route";
 
-export async function POST(req: Request) {
-  const token = process.env.DAILY_CRON_TOKEN!;
+
+export async function POST(req) {
+  const token = process.env.DAILY_CRON_TOKEN;
   const hdr = req.headers.get("x-cron-token");
   if (!token || hdr !== token) {
     return NextResponse.json(

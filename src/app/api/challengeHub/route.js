@@ -1,18 +1,7 @@
 import { NextResponse } from 'next/server';
 import { findAllScrapedData } from "../../../services/mongodb";
 import { saveScrapedData } from '../../../services/mongodb';
-import { scrapeActiveSGCircleEvents, scrapeHealthHubProgrammes, scrapeNparksEvents } from '../../../services/scrape';
-
-export const settledToArray = (res, label) => {
-  if (res.status === 'fulfilled') {
-    if (Array.isArray(res.value)) return res.value;
-    console.warn(`[scrape] ${label} returned non-array, coercing to []`);
-    return [];
-  } else {
-    console.error(`[scrape] ${label} failed:`, res.reason);
-    return [];
-  }
-};
+import { scrapeActiveSGCircleEvents, scrapeHealthHubProgrammes, scrapeNparksEvents, settledToArray } from '../../../services/scrape';
 
 export async function GET() {
     try {

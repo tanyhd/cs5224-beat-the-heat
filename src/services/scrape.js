@@ -444,3 +444,14 @@ export async function scrapeActiveSGCircleEvents({
     if (browser) await browser.close();
   }
 }
+
+export function settledToArray(res, label) {
+  if (res.status === 'fulfilled') {
+    if (Array.isArray(res.value)) return res.value;
+    console.warn(`[scrape] ${label} returned non-array, coercing to []`);
+    return [];
+  } else {
+    console.error(`[scrape] ${label} failed:`, res.reason);
+    return [];
+  }
+};
