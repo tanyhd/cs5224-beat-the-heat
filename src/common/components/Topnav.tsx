@@ -14,10 +14,12 @@ import Header from "./Header";
 import Loading from "./Loading";
 import { LOADING_DELAY } from "../constants/loadingDelay";
 import LoadingDots from "./LoadingDots";
+import BluePin from "../icons/BluePin";
 
 
 const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map'];
-const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'CREDITCARD', React.JSX.Element> = {
+const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'CREDITCARD' | 'BLUEPIN', React.JSX.Element> = {
+   BLUEPIN: <BluePin />,
    TAG: <Tag />,
    TRENDINGUP: <TrendingUp />,
    GRID: <Grid />,
