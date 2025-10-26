@@ -1,0 +1,20 @@
+.sponsorshipContainer {
+    display: flex;
+    flex-direction: row;
+}
+
+.filterBox {
+    display: flex;
+    width: 20%;
+}
+
+.sponsorGrip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.sponsorList {
+    display: flex;
+    width: 80%;
+}
