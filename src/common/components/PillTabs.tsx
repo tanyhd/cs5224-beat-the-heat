@@ -3,7 +3,7 @@ import './PillTabs.css'; // Assuming you have a CSS file for styling
 
 type Tab = {
   id: string | number;
-  label: string;
+  label: (React.ReactNode | string)[];
   content: React.ReactNode;
 };
 
@@ -27,7 +27,11 @@ const PillTabs: React.FC<PillTabsProps> = ({ tabs, onChange }) => {
               onChange();
             }}
           >
-            {tab.label}
+            {tab.label.map((item, index) => (
+              <span key={index} className="pill-tab-label-item">
+                {item}
+              </span>
+            ))}
           </button>
         ))}
       </div>

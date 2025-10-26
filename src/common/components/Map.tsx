@@ -22,6 +22,11 @@ import styles from "./Map.module.css";
 import PillToggle from "./PillTabs";
 import RouteMode from "../constants/routeMode";
 import Swap from "../icons/Swap";
+import Pill from "./Pill";
+import Pin from "../icons/Pin";
+import Flag from "../icons/Flag";
+import Walking from "../icons/Walking";
+import Cycling from "../icons/Cycling";
 
 const containerStyle = {
   width: "100%",
@@ -493,36 +498,48 @@ const Map: React.FC = () => {
         <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px", width: "75%" }}>
             <div style={{ display: "flex", gap: "10px", flex: 1}}>
-              <Autocomplete
-                className={styles.autocomplete}
-                options={{
-                  componentRestrictions: { country: "sg" },
-                  fields: ["formatted_address", "geometry", "name"],
-                }}
-                onLoad={(autocomplete) => (originRef.current = autocomplete)}
-                onPlaceChanged={() => {
-                  const place = originRef.current?.getPlace();
-                  if (place?.geometry?.location) {
-                    setOrigin(place.formatted_address || place.name || "");
-                  }
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Origin"
-                  value={origin}
-                  onChange={(e) => setOrigin(e.target.value)}
-                  style={{
-                    backgroundColor: "#FFF",
-                    color: "black",
-                    padding: "5px",
-                    flex: 1,
-                    borderRadius: "48px",
-                    border: "3px solid #D1EEF8",
-                    width: "100%"
-                  }}
-                />
-              </Autocomplete>
+                <div style={{ position: "relative", flex: 1 }}>
+                  <div style={{ 
+                    position: "absolute", 
+                    left: "12px", 
+                    top: "62%", 
+                    transform: "translateY(-50%)", 
+                    zIndex: 1,
+                    color: "#064E3B"
+                  }}>
+                    <Pin />
+                  </div>
+                  <Autocomplete
+                    className={styles.autocomplete}
+                    options={{
+                    componentRestrictions: { country: "sg" },
+                    fields: ["formatted_address", "geometry", "name"],
+                    }}
+                    onLoad={(autocomplete) => (originRef.current = autocomplete)}
+                    onPlaceChanged={() => {
+                    const place = originRef.current?.getPlace();
+                    if (place?.geometry?.location) {
+                      setOrigin(place.formatted_address || place.name || "");
+                    }
+                    }}
+                  >
+                    <input
+                    type="text"
+                    placeholder="Origin"
+                    value={origin}
+                    onChange={(e) => setOrigin(e.target.value)}
+                    style={{
+                      backgroundColor: "#FFF",
+                      color: "black",
+                      padding: "5px 5px 5px 35px",
+                      flex: 1,
+                      borderRadius: "48px",
+                      border: "3px solid #D1EEF8",
+                      width: "100%"
+                    }}
+                    />
+                  </Autocomplete>
+                </div>
 
               <div 
                 onClick={swapLocations}
@@ -541,6 +558,17 @@ const Map: React.FC = () => {
                 }}
               ><Swap /></div>
 
+            <div style={{ position: "relative", flex: 1 }}>
+              <div style={{ 
+                position: "absolute", 
+                left: "12px", 
+                top: "60%", 
+                transform: "translateY(-50%)", 
+                zIndex: 1,
+                color: "#064E3B"
+              }}>
+                <Flag />
+              </div>
               <Autocomplete
                 className={styles.autocomplete}
                 options={{
@@ -563,7 +591,7 @@ const Map: React.FC = () => {
                   style={{
                     backgroundColor: "#FFF",
                     color: "black",
-                    padding: "5px",
+                    padding: "5px 5px 5px 35px",
                     flex: 1,
                     borderRadius: "48px",
                     border: "3px solid #D1EEF8",
@@ -571,23 +599,24 @@ const Map: React.FC = () => {
                   }}
                 />
               </Autocomplete>
+              </div>
             </div>
           </div>
           <div>
             <PillToggle 
               tabs={[{
                 id: RouteMode.WALKING,
-                label: "Walking",
+                label: [<Walking />, "Walking"],
                 content: null,
               }, {
                 id: RouteMode.BICYCLING,
-                label: "Bicycling",
+                label: [<Cycling />, "Bicycling"],
                 content: null,
               }]} onChange={handleToggleChange} />
           </div>
         </div>
         <div style={{ display: "flex", gap: "10px"}}>
-          <button
+            <button
             onClick={calculateRouteWithLogging}
             style={{
               backgroundColor: "#06B6D4",
@@ -598,11 +627,22 @@ const Map: React.FC = () => {
               border: "none",
               fontWeight: "bold",
               cursor: "pointer",
+              transition: "all 0.2s ease",
             }}
-          >
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#0891B2";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#06B6D4";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+            >
             Find Cooler Route
-          </button>
-          <button
+            </button>
+            <button
             onClick={clearRouteWithLogging}
             style={{
               backgroundColor: "#EFFCFB",
@@ -613,10 +653,21 @@ const Map: React.FC = () => {
               border: "none",
               fontWeight: "bold",
               cursor: "pointer",
+              transition: "all 0.2s ease",
             }}
-          >
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#D1F2EA";
+              e.currentTarget.style.transform = "translateY(-1px)";
+              e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 78, 59, 0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#EFFCFB";
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+            >
             Clear
-          </button>
+            </button>
         </div>
 
         {duration && distance && (
@@ -741,6 +792,24 @@ const Map: React.FC = () => {
           ))}
         </GoogleMap>
       </div>
+
+      {duration && distance && <div style={{ 
+        borderRadius: "16px",
+        border: "3px solid #D1EEF8",
+        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        padding: "16px",
+        background: "#FFFFFF",
+      }}>
+        <div>
+          <div style={{ fontWeight: "bold", fontSize: "16px" }}>Coolest Path</div>
+          <div><Pill label={routeMode}/></div>
+        </div>
+        <div>{duration} {distance}</div>
+        <div>
+          <Pill label={`+ Tree lined streets`} />
+          <Pill label={`+ ${filteredLinkways?.length} Sheltered Linkways`} />
+        </div>
+      </div>}
     </div>
   ) : (
     <div>Loading Map...</div>

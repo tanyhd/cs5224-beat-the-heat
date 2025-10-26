@@ -35,3 +35,8 @@
 .pill-tab-content .tab-panel.active {
   display: block; /* Show active content */
 }
+
+.pill-tab-label-item > svg {
+  position: relative;
+  top: 4px;
+}
