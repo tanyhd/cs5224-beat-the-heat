@@ -27,6 +27,7 @@ import Pin from "../icons/Pin";
 import Flag from "../icons/Flag";
 import Walking from "../icons/Walking";
 import Cycling from "../icons/Cycling";
+import Route from "../icons/Route";
 
 const containerStyle = {
   width: "100%",
@@ -695,17 +696,36 @@ const Map: React.FC = () => {
                       key={index}
                       onClick={() => selectRoute(index)}
                       style={{
-                        padding: "8px 12px",
-                        backgroundColor:
-                          selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB",
-                        color: selectedRouteIndex === index ? "#FFF" : "#064E3B",
-                        fontWeight: "bold",
-                        border: "1px solid #ddd",
-                        borderRadius: "48px",
-                        cursor: "pointer",
-                        fontSize: "14px",
+                      padding: "8px 12px",
+                      backgroundColor:
+                        selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB",
+                      color: selectedRouteIndex === index ? "#FFF" : "#064E3B",
+                      fontWeight: "bold",
+                      border: "1px solid #ddd",
+                      borderRadius: "48px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                      if (selectedRouteIndex !== index) {
+                        e.currentTarget.style.backgroundColor = "#D1F2EA";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 78, 59, 0.15)";
+                      } else {
+                        e.currentTarget.style.backgroundColor = "#0891B2";
+                        e.currentTarget.style.transform = "translateY(-1px)";
+                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.3)";
+                      }
+                      }}
+                      onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB";
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
                       }}
                     >
+                      <Route style={{position: "relative", top:"3px"}} stroke={selectedRouteIndex === index ? "#FFF" : "#064E3B"} />
                       Option {index + 1}: {details.duration} |{" "}
                       {details.distance}
                     </button>
