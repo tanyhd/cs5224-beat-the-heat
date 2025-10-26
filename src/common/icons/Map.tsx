@@ -7,8 +7,8 @@ export default function Map({
 }) {
   return (
     <svg
-      width="4"
-      height="4"
+      width="20"
+      height="20"
       viewBox="0 0 4 4"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

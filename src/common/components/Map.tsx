@@ -28,6 +28,8 @@ import Flag from "../icons/Flag";
 import Walking from "../icons/Walking";
 import Cycling from "../icons/Cycling";
 import Route from "../icons/Route";
+import Clock from "../icons/Clock";
+import MapIcon from "../icons/Map";
 
 const containerStyle = {
   width: "100%",
@@ -806,13 +808,15 @@ const Map: React.FC = () => {
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
         padding: "16px",
         background: "#FFFFFF",
+        marginTop: "16px",
+        marginBottom: "32px",
       }}>
-        <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
           <div style={{ fontWeight: "bold", fontSize: "16px" }}>Coolest Path</div>
           <div><Pill label={routeMode}/></div>
         </div>
-        <div>{duration} {distance}</div>
-        <div>
+        <div style={{ color: "#7AA9C3", display: "flex", alignItems: "center", gap: "4px" }}><Clock stroke="#7AA9C3" />{duration}   <MapIcon />{distance}</div>
+        <div style={{marginTop: '8px'}}>
           <Pill label={`+ Tree lined streets`} />
           <Pill label={`+ ${filteredLinkways?.length} Sheltered Linkways`} />
         </div>
