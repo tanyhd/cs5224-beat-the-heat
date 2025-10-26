@@ -670,19 +670,6 @@ const Map: React.FC = () => {
             </button>
         </div>
 
-        {duration && distance && (
-          <div>
-            <p>
-              Duration: {duration} | Distance: {distance}
-            </p>
-            {filteredLinkways.length > 0 && (
-              <p style={{ color: "#00aa00", fontWeight: "bold" }}>
-                Found {filteredLinkways.length} sheltered infrastructure
-                feature(s) along the route
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Map */}
