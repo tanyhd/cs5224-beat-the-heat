@@ -609,11 +609,11 @@ const Map: React.FC = () => {
             <PillToggle 
               tabs={[{
                 id: RouteMode.WALKING,
-                label: [<Walking />, "Walking"],
+                label: "Walking",
                 content: null,
               }, {
                 id: RouteMode.BICYCLING,
-                label: [<Cycling />, "Bicycling"],
+                label: "Bicycling",
                 content: null,
               }]} onChange={handleToggleChange} />
           </div>
