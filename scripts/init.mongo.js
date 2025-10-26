@@ -24,3 +24,16 @@ const count = db.userInfo.count();
 print('Inserted', count, 'user');
 db.counters.remove({ _id: 'fixedindex' });
 db.counters.insert({ _id: 'fixedindex', current: count });
+
+// Load and insert sponsor data
+try {
+  if (typeof load === 'function') {
+    // For legacy mongo shell, create a separate sponsors.js file
+    load('scripts/sponsors.js');
+  } else {
+    print('For mongosh, use mongoimport to load sponsor data:');
+    print('mongoimport --uri "mongodb://127.0.0.1:27017/beat_the_heat" --collection sponsors --file scripts/sponsor_data.json --jsonArray --drop');
+  }
+} catch (e) {
+  print('Note: Run mongoimport separately to load sponsor data:', e);
+}

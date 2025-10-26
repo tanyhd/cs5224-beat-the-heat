@@ -1,0 +1,252 @@
+[
+  {
+    "itemName": "Cooling Towel",
+    "tier": 1,
+    "sponsor": "HydroChill Gear Co.",
+    "type": "gear",
+    "criteriaType": "distance",
+    "criteriaValue": 5000,
+    "image": "https://placehold.co/100x100/32CD32/ffffff?text=Cooling+Towel",
+    "status": "locked"
+  },
+  {
+    "itemName": "Electrolyte Drink Coupon",
+    "tier": 1,
+    "sponsor": "ThirstQuench Drinks",
+    "type": "food",
+    "criteriaType": "challenges",
+    "criteriaValue": 3,
+    "image": "https://placehold.co/100x100/FFD700/000000?text=Electrolyte+Coupon",
+    "status": "available"
+  },
+  {
+    "itemName": "UV Protection Cap",
+    "tier": 2,
+    "sponsor": "SunSafe Apparel",
+    "type": "apparel",
+    "criteriaType": "distance",
+    "criteriaValue": 10000,
+    "image": "https://placehold.co/100x100/00BFFF/000000?text=UV+Cap",
+    "status": "locked"
+  },
+  {
+    "itemName": "Insulated Water Bottle",
+    "tier": 2,
+    "sponsor": "EverCool Systems",
+    "type": "gear",
+    "criteriaType": "challenges",
+    "criteriaValue": 7,
+    "image": "https://placehold.co/100x100/87CEEB/000000?text=Water+Bottle",
+    "status": "available"
+  },
+  {
+    "itemName": "Gelato Store Voucher ($10)",
+    "tier": 3,
+    "sponsor": "Arctic Delights",
+    "type": "food",
+    "criteriaType": "distance",
+    "criteriaValue": 25000,
+    "image": "https://placehold.co/100x100/FF69B4/ffffff?text=Gelato+Voucher",
+    "status": "locked"
+  },
+  {
+    "itemName": "High-Tech Cooling Vest",
+    "tier": 4,
+    "sponsor": "Advanced Cooling Solutions",
+    "type": "apparel",
+    "criteriaType": "challenges",
+    "criteriaValue": 15,
+    "image": "https://placehold.co/100x100/800080/ffffff?text=Cooling+Vest",
+    "status": "locked"
+  },
+  {
+    "itemName": "Smart Personal Fan",
+    "tier": 3,
+    "sponsor": "BreezeTech",
+    "type": "gear",
+    "criteriaType": "distance",
+    "criteriaValue": 15000,
+    "image": "https://placehold.co/100x100/4682B4/ffffff?text=Smart+Fan",
+    "status": "redemeed"
+  },
+  {
+    "itemName": "Energy Snack Bar",
+    "tier": 1,
+    "sponsor": "PowerFuel Co.",
+    "type": "food",
+    "criteriaType": "challenges",
+    "criteriaValue": 2,
+    "image": "https://placehold.co/100x100/5CB3FF/000000?text=Snack+Bar",
+    "status": "available"
+  },
+  {
+    "itemName": "Key Lanyard",
+    "tier": 1,
+    "sponsor": "AccessTech",
+    "type": "gear",
+    "criteriaType": "distance",
+    "criteriaValue": 3000,
+    "image": "https://placehold.co/100x100/F7A072/000000?text=Lanyard",
+    "status": "redemeed"
+  },
+  {
+    "itemName": "Apparel Sticker Pack",
+    "tier": 1,
+    "sponsor": "BadgeIt",
+    "type": "apparel",
+    "criteriaType": "challenges",
+    "criteriaValue": 1,
+    "image": "https://placehold.co/100x100/90EE90/000000?text=Sticker+Pack",
+    "status": "locked"
+  },
+  {
+    "itemName": "Iced Coffee Coupon",
+    "tier": 1,
+    "sponsor": "CafeCentral",
+    "type": "food",
+    "criteriaType": "distance",
+    "criteriaValue": 6000,
+    "image": "https://placehold.co/100x100/800000/ffffff?text=Coffee+Coupon",
+    "status": "available"
+  },
+  {
+    "itemName": "SPF 50 Sunscreen Stick",
+    "tier": 2,
+    "sponsor": "SkinGuard",
+    "type": "gear",
+    "criteriaType": "distance",
+    "criteriaValue": 8000,
+    "image": "https://placehold.co/100x100/F0E68C/000000?text=Sunscreen",
+    "status": "locked"
+  },
+  {
+    "itemName": "Cooling Wristbands",
+    "tier": 2,
+    "sponsor": "SweatAway",
+    "type": "apparel",
+    "criteriaType": "challenges",
+    "criteriaValue": 5,
+    "image": "https://placehold.co/100x100/DDA0DD/000000?text=Wristbands",
+    "status": "available"
+  },
+  {
+    "itemName": "Fruit Smoothie Voucher",
+    "tier": 2,
+    "sponsor": "FreshBlend",
+    "type": "food",
+    "criteriaType": "distance",
+    "criteriaValue": 12000,
+    "image": "https://placehold.co/100x100/F4A460/000000?text=Smoothie",
+    "status": "locked"
+  },
+  {
+    "itemName": "Basic First Aid Kit",
+    "tier": 2,
+    "sponsor": "RescuePro",
+    "type": "gear",
+    "criteriaType": "challenges",
+    "criteriaValue": 9,
+    "image": "https://placehold.co/100x100/F08080/000000?text=First+Aid+Kit",
+    "status": "available"
+  },
+  {
+    "itemName": "Moisture-Wicking T-Shirt",
+    "tier": 2,
+    "sponsor": "UrbanThreads",
+    "type": "apparel",
+    "criteriaType": "distance",
+    "criteriaValue": 18000,
+    "image": "https://placehold.co/100x100/778899/ffffff?text=T-Shirt",
+    "status": "locked"
+  },
+  {
+    "itemName": "Ice Cream Shop Coupon",
+    "tier": 2,
+    "sponsor": "CoolTreats",
+    "type": "food",
+    "criteriaType": "challenges",
+    "criteriaValue": 12,
+    "image": "https://placehold.co/100x100/E0FFFF/000000?text=Ice+Cream",
+    "status": "redemeed"
+  },
+  {
+    "itemName": "Compact Power Bank (10k mAh)",
+    "tier": 3,
+    "sponsor": "ChargeUp",
+    "type": "gear",
+    "criteriaType": "distance",
+    "criteriaValue": 20000,
+    "image": "https://placehold.co/100x100/48D1CC/000000?text=Power+Bank",
+    "status": "locked"
+  },
+  {
+    "itemName": "Lightweight Anorak Jacket",
+    "tier": 3,
+    "sponsor": "ActiveWear SG",
+    "type": "apparel",
+    "criteriaType": "challenges",
+    "criteriaValue": 10,
+    "image": "https://placehold.co/100x100/20B2AA/ffffff?text=Jacket",
+    "status": "available"
+  },
+  {
+    "itemName": "Spa Day Voucher ($50)",
+    "tier": 3,
+    "sponsor": "RelaxHub",
+    "type": "food",
+    "criteriaType": "distance",
+    "criteriaValue": 30000,
+    "image": "https://placehold.co/100x100/FFA07A/000000?text=Spa+Voucher",
+    "status": "locked"
+  },
+  {
+    "itemName": "Fitness Tracker Watch",
+    "tier": 3,
+    "sponsor": "PaceMaker",
+    "type": "gear",
+    "criteriaType": "challenges",
+    "criteriaValue": 14,
+    "image": "https://placehold.co/100x100/9370DB/ffffff?text=Fitness+Tracker",
+    "status": "locked"
+  },
+  {
+    "itemName": "Sports Sunglasses (Polarized)",
+    "tier": 3,
+    "sponsor": "VisionProtect",
+    "type": "apparel",
+    "criteriaType": "distance",
+    "criteriaValue": 40000,
+    "image": "https://placehold.co/100x100/6A5ACD/ffffff?text=Sunglasses",
+    "status": "available"
+  },
+  {
+    "itemName": "Premium Cooler Bag (Large)",
+    "tier": 4,
+    "sponsor": "ChillBox Corp",
+    "type": "gear",
+    "criteriaType": "challenges",
+    "criteriaValue": 20,
+    "image": "https://placehold.co/100x100/008B8B/ffffff?text=Cooler+Bag",
+    "status": "locked"
+  },
+  {
+    "itemName": "High-Performance Backpack",
+    "tier": 4,
+    "sponsor": "Trekker Co.",
+    "type": "apparel",
+    "criteriaType": "distance",
+    "criteriaValue": 50000,
+    "image": "https://placehold.co/100x100/B8860B/ffffff?text=Backpack",
+    "status": "locked"
+  },
+  {
+    "itemName": "Personal Air Purifier",
+    "tier": 4,
+    "sponsor": "CleanAir Solutions",
+    "type": "gear",
+    "criteriaType": "challenges",
+    "criteriaValue": 25,
+    "image": "https://placehold.co/100x100/8B0000/ffffff?text=Air+Purifier",
+    "status": "locked"
+  }
+]
