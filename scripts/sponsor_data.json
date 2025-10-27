@@ -67,7 +67,7 @@
     "criteriaType": "distance",
     "criteriaValue": 15000,
     "image": "https://placehold.co/100x100/4682B4/ffffff?text=Smart+Fan",
-    "status": "redemeed"
+    "status": "redeemed"
   },
   {
     "itemName": "Energy Snack Bar",
@@ -87,7 +87,7 @@
     "criteriaType": "distance",
     "criteriaValue": 3000,
     "image": "https://placehold.co/100x100/F7A072/000000?text=Lanyard",
-    "status": "redemeed"
+    "status": "redeemed"
   },
   {
     "itemName": "Apparel Sticker Pack",
@@ -167,7 +167,7 @@
     "criteriaType": "challenges",
     "criteriaValue": 12,
     "image": "https://placehold.co/100x100/E0FFFF/000000?text=Ice+Cream",
-    "status": "redemeed"
+    "status": "redeemed"
   },
   {
     "itemName": "Compact Power Bank (10k mAh)",
