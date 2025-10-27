@@ -1,0 +1,49 @@
+.sponsorshipFilterContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #EFFCFB;
+    width: 100%;
+}
+
+.header {
+    color: #064E3B;
+    font-weight: bold;
+}
+
+.container {
+    border-radius: 16px;
+    background: #FFFFFF;
+    border: 4px solid #D1EEF8;
+    color: #052F5F;
+    text-transform: capitalize;
+}
+
+.pill {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: #EFFCFB;
+    color: #064E3B;
+    padding: 16px;
+    border-radius: 16px;
+}
+
+.pillsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.progressBox {
+    padding: 16px
+}
+
+.caption {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    color: #7AA9C3;
+}

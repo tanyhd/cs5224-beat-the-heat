@@ -38,7 +38,7 @@ const SponsorBox = ({sponsor}: SponsorBoxProps) => {
                 </div>
                 <div className={styles.sponsorFooter}>
                     <div className={styles.sponsorName}><Handshake /> <p className={styles.sponsorName}>{sponsorName}</p></div>
-                    <Button classNameProps={styles.redeemButton}>Redeem</Button>
+                    <div className={styles.redeemButtonContainer}><Button classNameProps={styles.redeemButton}>Redeem</Button></div>
                 </div>
             </div>
         </div>
