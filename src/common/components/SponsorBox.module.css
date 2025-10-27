@@ -71,7 +71,13 @@
 .sponsorFooter {
     display: flex;
     justify-content: space-between;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.redeemButtonContainer {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .redeemButton {
@@ -81,4 +87,10 @@
     max-height: 40px;
     background: #06B6D4;
     border-radius: 16px;
+}
+
+@media (max-width: 1300px) {
+    .sponsorBox {
+        width: 100%;
+    }
 }

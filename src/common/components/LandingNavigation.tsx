@@ -1,38 +1,38 @@
-import Tag from "../icons/Tag"
-import TrendingUp from "../icons/TrendingUp"
 import Grid from "../icons/Grid"
-import CreditCard from "../icons/CreditCard"
 import styles from "./LandingNavigation.module.css"
 import {LinkDetailBox} from "./DetailBox"
+import Trophy from "../icons/Trophy"
+import Beat from "../icons/Beat"
+import Handshake from "../icons/Handshake"
 
 const HOMEPAGE_NAV_LINKS = [
    {
+     label: 'Breeze Navigator',
+     subLabel: 'Discover optimal routes with shade and lower temperatures for your walks or cycles',
+     linkText: 'Navigate Now',
+     link: '/map',
+     icon: <Grid stroke={"#06B6D4"}/>
+   },
+   {
      label: 'Chill Challenge Hub',
      subLabel: 'Join walking or cycling challenges to stay active and cool',
-     linkText: 'Challenge Hub',
+     linkText: 'View Challenges',
      link: '/challengeHub',
-     icon: <Tag stroke={"#06B6D4"}/>
+     icon: <Trophy stroke={"#06B6D4"}/>
    },
    {
-     label: 'Track Expenditure',
-     subLabel: 'Monitor your spending patterns and stay on top of your finances.',
-     linkText: 'View Expenses',
-     link: '/cards/track-card',
-     icon: <TrendingUp stroke={"#06B6D4"}/>
-   },
-   {
-      label: 'Manage Merchants on Card',
-      subLabel: 'See all merchants where your card has been used for transactions.',
-      linkText: 'Manage Merchants',
-      link: '/card-on-file',
-      icon: <CreditCard stroke={"#06B6D4"}/>
+      label: 'Challenge Tracker',
+      subLabel: 'Log your activity progress and monitor your performance in the heat',
+      linkText: 'Track challenge',
+      link: '/challengeTracker',
+      icon: <Beat stroke={"#06B6D4"}/>
     },
     {
-      label: 'Search Merchants',
-      subLabel: "Check for merchants' MCC to see if they are eligible for offers.",
-      linkText: 'Search Merchants',
-      link: '/merchant-search',
-      icon: <Grid stroke={"#06B6D4"}/>
+      label: 'Sponsor Collaborations',
+      subLabel: "Explore curated items from sponsors: cooling gear, hydration, and shade solutions",
+      linkText: 'Browse Sponsors',
+      link: '/sponsorship',
+      icon: <Handshake stroke={"#06B6D4"}/>
     },
  ]
 

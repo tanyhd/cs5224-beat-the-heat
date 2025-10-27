@@ -15,15 +15,20 @@ import Loading from "./Loading";
 import { LOADING_DELAY } from "../constants/loadingDelay";
 import LoadingDots from "./LoadingDots";
 import BluePin from "../icons/BluePin";
+import Beat from "../icons/Beat";
+import Trophy from "../icons/Trophy";
+import Handshake from "../icons/Handshake";
 
 
 const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map'];
-const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'CREDITCARD' | 'BLUEPIN', React.JSX.Element> = {
+const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN', React.JSX.Element> = {
    BLUEPIN: <BluePin />,
    TAG: <Tag />,
    TRENDINGUP: <TrendingUp />,
    GRID: <Grid />,
-   CREDITCARD: <CreditCard />
+   BEAT: <Beat />,
+   TROPHY: <Trophy stroke="#052F5F" />,
+   HANDSHAKE: <Handshake stroke="#052F5F" />,
 };
 
 const Topnav: React.FC = () => {
