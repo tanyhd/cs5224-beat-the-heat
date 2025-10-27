@@ -71,7 +71,7 @@ const Topnav: React.FC = () => {
                   className={styles.link}
                >
                   {link.icon && ICON_MAP[link.icon as keyof typeof ICON_MAP]}
-                  {link.label}
+                  <span className={styles.labelWrapper}>{link.label}</span>
                </a>
             ))}
          </div>
