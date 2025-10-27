@@ -63,8 +63,9 @@ export default function Challenges({ challenges }: { challenges: Challenge[] }) 
             key={key}
             className={styles?.card ?? ''}
             style={{
-              border: '1px solid #eee',
+              border: '4px solid #D1EEF8',
               borderRadius: 12,
+              background: '#fff',
               padding: 16,
               display: 'flex',
               flexDirection: 'column',
@@ -134,22 +135,16 @@ export default function Challenges({ challenges }: { challenges: Challenge[] }) 
             {desc && <p style={{ margin: 0, lineHeight: 1.5 }}>{desc}</p>}
 
             {href && href !== '#' && (
-              <div style={{ marginTop: 8 }}>
-                <a
+              <div style={{ marginTop: 8 }} className={styles.buttonGroup}>
+                <Button
                   href={href}
                   target="_blank"
                   rel="noreferrer"
-                  className={styles?.button ?? ''}
-                  style={{
-                    display: 'inline-block',
-                    padding: '8px 14px',
-                    borderRadius: 8,
-                    border: '1px solid #ddd',
-                    textDecoration: 'none',
-                  }}
+                  variant="primary"
+                  classNameProps={styles?.button}
                 >
                   Open details
-                </a>
+                </Button>
               </div>
             )}
           </article>

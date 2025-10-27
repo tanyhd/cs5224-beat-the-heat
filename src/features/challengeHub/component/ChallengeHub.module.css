@@ -2,7 +2,11 @@
    display: flex;
    width: 120px;
    justify-content: center;
-   margin: 24px auto;
+}
+
+.buttonGroup {
+   display: flex;
+   justify-content: center;
 }
 
 .subHeader {

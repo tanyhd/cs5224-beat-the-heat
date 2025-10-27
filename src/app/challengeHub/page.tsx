@@ -8,7 +8,7 @@ import styles from "./ChallengePage.module.css";
 
 const CHALLENGES_BREADCRUMBS = [
   { name: "Home", href: "/" },
-  { name: "Chill Challenge Hub", href: "/challengeHub" },
+  { name: "Challenge Hub", href: "/challengeHub" },
 ];
 
 export default function ChallengePage() {
@@ -22,8 +22,8 @@ export default function ChallengePage() {
     <div>
       <Breadcrumb links={CHALLENGES_BREADCRUMBS} />
       <Header
-        headerText="Chill Challenge Hub"
-        captionText="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        headerText="Challenge Hub"
+        captionText="Join walking or cycling challenges to stay active and cool"
         containerClassName={styles.container}
       />
       <Challenges challenges={data} />
