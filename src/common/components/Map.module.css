@@ -1,3 +1,32 @@
 .autocomplete {
     flex: 1;
 }
+
+.inputContainer {
+    flex-direction: row;
+}
+
+.inputGroup {
+    width: 75%;
+}
+
+.innerInputGroup {
+    flex-direction: row;
+}
+
+@media (max-width: 1068px) {
+    .inputContainer {
+        flex-direction: column;
+        width: 100%;
+    }
+    .inputGroup {
+        width: 100%;
+        flex-direction: column;
+    }
+    .innerInputGroup {
+        flex-direction: column;
+    }
+    .pillGroup {
+        margin-bottom: 32px;
+    }
+}

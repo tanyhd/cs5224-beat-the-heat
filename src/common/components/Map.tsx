@@ -498,51 +498,51 @@ const Map: React.FC = () => {
         }}
       >
         <div style={{ color: "#064E3B", fontWeight: "bold" }}>Plan your route</div>
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px", width: "75%" }}>
-            <div style={{ display: "flex", gap: "10px", flex: 1}}>
-                <div style={{ position: "relative", flex: 1 }}>
-                  <div style={{ 
-                    position: "absolute", 
-                    left: "12px", 
-                    top: "62%", 
-                    transform: "translateY(-50%)", 
-                    zIndex: 1,
-                    color: "#064E3B"
-                  }}>
-                    <Pin />
-                  </div>
-                  <Autocomplete
-                    className={styles.autocomplete}
-                    options={{
-                    componentRestrictions: { country: "sg" },
-                    fields: ["formatted_address", "geometry", "name"],
-                    }}
-                    onLoad={(autocomplete) => (originRef.current = autocomplete)}
-                    onPlaceChanged={() => {
-                    const place = originRef.current?.getPlace();
-                    if (place?.geometry?.location) {
-                      setOrigin(place.formatted_address || place.name || "");
-                    }
-                    }}
-                  >
-                    <input
-                    type="text"
-                    placeholder="Origin"
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value)}
-                    style={{
-                      backgroundColor: "#FFF",
-                      color: "black",
-                      padding: "5px 5px 5px 35px",
-                      flex: 1,
-                      borderRadius: "48px",
-                      border: "3px solid #D1EEF8",
-                      width: "100%"
-                    }}
-                    />
-                  </Autocomplete>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }} className={styles.inputContainer}>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px" }} className={styles.inputGroup}>
+            <div style={{ display: "flex", gap: "10px", flex: 1}} className={styles.innerInputGroup}>
+              <div style={{ position: "relative", flex: 1 }}>
+                <div style={{ 
+                  position: "absolute", 
+                  left: "12px", 
+                  top: "62%", 
+                  transform: "translateY(-50%)", 
+                  zIndex: 1,
+                  color: "#064E3B"
+                }}>
+                  <Pin />
                 </div>
+                <Autocomplete
+                  className={styles.autocomplete}
+                  options={{
+                  componentRestrictions: { country: "sg" },
+                  fields: ["formatted_address", "geometry", "name"],
+                  }}
+                  onLoad={(autocomplete) => (originRef.current = autocomplete)}
+                  onPlaceChanged={() => {
+                  const place = originRef.current?.getPlace();
+                  if (place?.geometry?.location) {
+                    setOrigin(place.formatted_address || place.name || "");
+                  }
+                  }}
+                >
+                  <input
+                  type="text"
+                  placeholder="Origin"
+                  value={origin}
+                  onChange={(e) => setOrigin(e.target.value)}
+                  style={{
+                    backgroundColor: "#FFF",
+                    color: "black",
+                    padding: "5px 5px 5px 35px",
+                    flex: 1,
+                    borderRadius: "48px",
+                    border: "3px solid #D1EEF8",
+                    width: "100%"
+                  }}
+                  />
+                </Autocomplete>
+              </div>
 
               <div 
                 onClick={swapLocations}
@@ -558,54 +558,57 @@ const Map: React.FC = () => {
                   width: "32px",
                   height: "32px",
                   padding: "4px",
-                }}
-              ><Swap /></div>
-
-            <div style={{ position: "relative", flex: 1 }}>
-              <div style={{ 
-                position: "absolute", 
-                left: "12px", 
-                top: "60%", 
-                transform: "translateY(-50%)", 
-                zIndex: 1,
-                color: "#064E3B"
-              }}>
-                <Flag />
-              </div>
-              <Autocomplete
-                className={styles.autocomplete}
-                options={{
-                  componentRestrictions: { country: "sg" },
-                  fields: ["formatted_address", "geometry", "name"],
-                }}
-                onLoad={(autocomplete) => (destRef.current = autocomplete)}
-                onPlaceChanged={() => {
-                  const place = destRef.current?.getPlace();
-                  if (place?.geometry?.location) {
-                    setDestination(place.formatted_address || place.name || "");
-                  }
+                  margin: 'auto'
                 }}
               >
-                <input
-                  type="text"
-                  placeholder="Destination"
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                  style={{
-                    backgroundColor: "#FFF",
-                    color: "black",
-                    padding: "5px 5px 5px 35px",
-                    flex: 1,
-                    borderRadius: "48px",
-                    border: "3px solid #D1EEF8",
-                    width: "100%"
+                <Swap />
+              </div>
+
+              <div style={{ position: "relative", flex: 1 }}>
+                <div style={{ 
+                  position: "absolute", 
+                  left: "12px", 
+                  top: "60%", 
+                  transform: "translateY(-50%)", 
+                  zIndex: 1,
+                  color: "#064E3B"
+                }}>
+                  <Flag />
+                </div>
+                <Autocomplete
+                  className={styles.autocomplete}
+                  options={{
+                    componentRestrictions: { country: "sg" },
+                    fields: ["formatted_address", "geometry", "name"],
                   }}
-                />
-              </Autocomplete>
+                  onLoad={(autocomplete) => (destRef.current = autocomplete)}
+                  onPlaceChanged={() => {
+                    const place = destRef.current?.getPlace();
+                    if (place?.geometry?.location) {
+                      setDestination(place.formatted_address || place.name || "");
+                    }
+                  }}
+                >
+                  <input
+                    type="text"
+                    placeholder="Destination"
+                    value={destination}
+                    onChange={(e) => setDestination(e.target.value)}
+                    style={{
+                      backgroundColor: "#FFF",
+                      color: "black",
+                      padding: "5px 5px 5px 35px",
+                      flex: 1,
+                      borderRadius: "48px",
+                      border: "3px solid #D1EEF8",
+                      width: "100%"
+                    }}
+                  />
+                </Autocomplete>
               </div>
             </div>
           </div>
-          <div>
+          <div className={styles.pillGroup}>
             <PillToggle 
               tabs={[{
                 id: RouteMode.WALKING,
