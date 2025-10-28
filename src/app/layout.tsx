@@ -12,8 +12,8 @@ const inter = Inter({
 
 
 export const metadata: Metadata = {
-  title: "[IT5007] Card Master App",
-  description: "Helping you win the credit card game, one card at a time!",
+  title: "Beat The Heat",
+  description: "Find cooler routes, join chill challenges, and track your HeatBeat to move smarter on hot days.",
 };
 
 export default function RootLayout({
