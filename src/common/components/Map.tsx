@@ -9,7 +9,7 @@ import {
   Autocomplete,
 } from "@react-google-maps/api";
 import {
-  filterShelteredLinkwaysInBoundary,
+  filterShelteredLinkwaysAlongRoute,
   loadShelteredLinkwayData,
   convertShelteredLinkwayToGoogleMapsPolygons,
   selectOptimalLinkwayWaypoints,
@@ -79,7 +79,6 @@ const Map: React.FC = () => {
   const [origin, setOrigin] = useState<string>("");
   const [destination, setDestination] = useState<string>("");
   const [waypoints, setWaypoints] = useState<string[]>([]);
-  const [markers, setMarkers] = useState<google.maps.LatLngLiteral[]>([]);
   const [shelteredLinkwayData, setShelteredLinkwayData] =
     useState<ShelteredLinkwayData | null>(null);
   const [filteredLinkways, setFilteredLinkways] = useState<
@@ -94,6 +93,7 @@ const Map: React.FC = () => {
     []
   );
   const [shelterPreference, setShelterPreference] = useState<number>(50); // 0-100 slider value
+  const [appliedShelterPreference, setAppliedShelterPreference] = useState<number>(50); // Shelter preference used in last route calculation
   // keep setters for origin/dest coords used during route calculation
   const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
   const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
@@ -149,6 +149,30 @@ const Map: React.FC = () => {
 
     return R * c;
   };
+
+  // Filter shelters for a specific route path
+  const filterSheltersForRoute = useCallback((
+    route: google.maps.DirectionsRoute,
+    shelteredData: ShelteredLinkwayData,
+    shelterParams: { bufferDistance: number; maxResults: number }
+  ): ShelteredLinkwayFeature[] => {
+    if (!route.overview_path || route.overview_path.length === 0) {
+      return [];
+    }
+
+    // Extract route path as array of coordinates
+    const routePath: LatLngCoordinate[] = route.overview_path.map((point) => ({
+      lat: point.lat(),
+      lng: point.lng(),
+    }));
+
+    // Use filterShelteredLinkwaysAlongRoute for path-specific filtering
+    return filterShelteredLinkwaysAlongRoute(routePath, shelteredData, {
+      bufferDistance: shelterParams.bufferDistance,
+      maxResults: shelterParams.maxResults,
+      strictFiltering: true,
+    });
+  }, []);
 
   // Calculate shelter parameters based on slider value (0-100) and route distance
   const calculateShelterParams = useCallback((preferenceValue: number, routeDistanceMeters: number) => {
@@ -221,6 +245,53 @@ const Map: React.FC = () => {
     loadData();
   }, []);
 
+  // Update shelters when route selection changes (using appliedShelterPreference, NOT live shelterPreference)
+  useEffect(() => {
+    if (!shelteredLinkwayData || !directionsResponse || !routeOptions.length) {
+      return;
+    }
+
+    const selectedRoute = routeOptions[selectedRouteIndex];
+    if (!selectedRoute) {
+      return;
+    }
+
+    // Get route distance for proportional calculation
+    const routeDistance = selectedRoute.legs?.reduce(
+      (total, leg) => total + (leg.distance?.value || 0),
+      0
+    ) || 1000;
+
+    // Use the appliedShelterPreference (from last route calculation), not the live slider value
+    const shelterParams = calculateShelterParams(appliedShelterPreference, routeDistance);
+
+    // Filter shelters along the selected route path
+    const filtered = filterSheltersForRoute(selectedRoute, shelteredLinkwayData, shelterParams);
+    setFilteredLinkways(filtered);
+
+    // Get destination coordinates from the selected route
+    const lastLeg = selectedRoute.legs?.[selectedRoute.legs.length - 1];
+    if (lastLeg?.end_location) {
+      const destCoords = {
+        lat: lastLeg.end_location.lat(),
+        lng: lastLeg.end_location.lng(),
+      };
+      const ordered = orderSheltersFromDestination(filtered, destCoords);
+      setOrderedShelters(ordered);
+    }
+
+    console.log(`Updated shelters for route option ${selectedRouteIndex + 1}: ${filtered.length} shelters found`);
+  }, [
+    selectedRouteIndex,
+    shelteredLinkwayData,
+    directionsResponse,
+    routeOptions,
+    appliedShelterPreference,
+    calculateShelterParams,
+    filterSheltersForRoute,
+    orderSheltersFromDestination,
+  ]);
+
   // Function to geocode an address and get coordinates
   const geocodeAddress = useCallback(
     async (address: string): Promise<LatLngCoordinate | null> => {
@@ -273,6 +344,9 @@ const Map: React.FC = () => {
       alert("Please enter both origin and destination");
       return;
     }
+
+    // Capture the current shelter preference at the time of calculation
+    setAppliedShelterPreference(shelterPreference);
 
     const directionsService = new google.maps.DirectionsService();
 
@@ -329,10 +403,12 @@ const Map: React.FC = () => {
       }
 
 
-      // Filter sheltered linkways and optionally add them as waypoints
-      if (shelteredLinkwayData && originCoordinates && destCoordinates) {
+      // Filter sheltered linkways along the first route (will update when route changes)
+      if (shelteredLinkwayData && results.routes && results.routes[0]) {
+        const firstRoute = results.routes[0];
+
         // Get route distance for proportional calculation
-        const routeDistance = results.routes[0]?.legs?.reduce(
+        const routeDistance = firstRoute.legs?.reduce(
           (total, leg) => total + (leg.distance?.value || 0),
           0
         ) || 1000; // Default to 1km if distance unavailable
@@ -340,21 +416,15 @@ const Map: React.FC = () => {
         // Calculate shelter parameters based on user preference and route distance
         const shelterParams = calculateShelterParams(shelterPreference, routeDistance);
 
-        const filtered = filterShelteredLinkwaysInBoundary(
-          originCoordinates,
-          destCoordinates,
-          shelteredLinkwayData,
-          {
-            bufferDistance: shelterParams.bufferDistance,
-            maxResults: shelterParams.maxResults,
-            strictFiltering: true, // Use strict filtering along route line
-          }
-        );
+        // Filter shelters along the actual route path (not just bounding box)
+        const filtered = filterSheltersForRoute(firstRoute, shelteredLinkwayData, shelterParams);
         setFilteredLinkways(filtered);
 
         // Order shelters from destination for numbering
-        const ordered = orderSheltersFromDestination(filtered, destCoordinates);
-        setOrderedShelters(ordered);
+        if (destCoordinates) {
+          const ordered = orderSheltersFromDestination(filtered, destCoordinates);
+          setOrderedShelters(ordered);
+        }
 
         console.groupCollapsed("Filtered sheltered linkways");
         console.log(`count: ${filtered.length}`);
@@ -535,11 +605,12 @@ const Map: React.FC = () => {
     setOrigin("");
     setDestination("");
     setWaypoints([]);
-    setMarkers([]);
     setFilteredLinkways([]);
+    setOrderedShelters([]);
     setOriginCoords(null);
     setDestCoords(null);
     setOptimalWaypoints([]);
+    // Note: We keep appliedShelterPreference so it's ready for next calculation
     // setRouteTrees([]);
   }, []);
 
@@ -569,17 +640,6 @@ const Map: React.FC = () => {
   );
 
   const clearRouteWithLogging = logButtonClick("Clear Route", clearRoute);
-
-  const onMapClick = useCallback((event: google.maps.MapMouseEvent) => {
-    if (event.latLng) {
-      const newMarker = {
-        lat: event.latLng.lat(),
-        lng: event.latLng.lng(),
-      };
-      setMarkers((prev) => [...prev, newMarker]);
-    }
-  }, []);
-
 
   return isLoaded ? (
     <div>
@@ -791,7 +851,7 @@ const Map: React.FC = () => {
               {routeOptions
                 .slice(
                   0,
-                  parseInt(process.env.NEXT_PUBLIC_MAX_ROUTE_OPTIONS || "2")
+                  parseInt(process.env.NEXT_PUBLIC_MAX_ROUTE_OPTIONS || "5")
                 )
                 .map((route, index) => {
                   const details = getRouteDetails(route);
@@ -842,7 +902,6 @@ const Map: React.FC = () => {
           mapContainerStyle={containerStyle}
           center={center}
           zoom={11}
-          onClick={onMapClick}
         >
           {/* Render route if available */}
           {directionsResponse && routeOptions.length > 0 && (
@@ -888,10 +947,6 @@ const Map: React.FC = () => {
               );
             })}
 
-          {/* Render clicked markers */}
-          {markers.map((marker, index) => (
-            <Marker key={index} position={marker} />
-          ))}
 
           {/* Render optimal waypoint markers */}
           {optimalWaypoints.map((waypoint, index) => (
