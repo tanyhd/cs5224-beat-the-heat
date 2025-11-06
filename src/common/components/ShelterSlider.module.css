@@ -1,0 +1,126 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 0;
+  margin: 12px 0;
+  background-color: transparent;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #052F5F;
+}
+
+.value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #06B6D4;
+  background-color: #E0F7FA;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.sliderWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: linear-gradient(to right, #E5E7EB 0%, #06B6D4 100%);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #06B6D4;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #0891A5;
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #06B6D4;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #0891A5;
+  transform: scale(1.1);
+}
+
+.slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #E5E7EB;
+}
+
+.slider:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+  background: #9CA3AF;
+}
+
+.slider:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+  background: #9CA3AF;
+}
+
+.marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+  margin-top: 2px;
+}
+
+.mark {
+  font-size: 9px;
+  color: #9CA3AF;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .label {
+    font-size: 12px;
+  }
+
+  .value {
+    font-size: 11px;
+    padding: 1px 6px;
+  }
+
+  .mark {
+    font-size: 8px;
+  }
+}

@@ -13,10 +13,12 @@ import {
   loadShelteredLinkwayData,
   convertShelteredLinkwayToGoogleMapsPolygons,
   selectOptimalLinkwayWaypoints,
+  getShelteredLinkwayCentroid,
   type ShelteredLinkwayData,
   type ShelteredLinkwayFeature,
   type LatLngCoordinate,
 } from "@/common/utils/shelteredLinkway";
+import { createShelterMarkerIcon } from "@/common/utils/shelterMarkerIcon";
 
 import styles from "./Map.module.css";
 import PillToggle from "./PillTabs";
@@ -25,6 +27,7 @@ import Swap from "../icons/Swap";
 import Pill from "./Pill";
 import Pin from "../icons/Pin";
 import Flag from "../icons/Flag";
+import ShelterSlider from "./ShelterSlider";
 import Walking from "../icons/Walking";
 import Cycling from "../icons/Cycling";
 import Route from "../icons/Route";
@@ -82,11 +85,15 @@ const Map: React.FC = () => {
   const [filteredLinkways, setFilteredLinkways] = useState<
     ShelteredLinkwayFeature[]
   >([]);
+  const [orderedShelters, setOrderedShelters] = useState<
+    ShelteredLinkwayFeature[]
+  >([]);
   const [autoAddLinkwayWaypoints, setAutoAddLinkwayWaypoints] =
     useState<boolean>(true);
   const [optimalWaypoints, setOptimalWaypoints] = useState<LatLngCoordinate[]>(
     []
   );
+  const [shelterPreference, setShelterPreference] = useState<number>(50); // 0-100 slider value
   // keep setters for origin/dest coords used during route calculation
   const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
   const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
@@ -109,6 +116,78 @@ const Map: React.FC = () => {
 
   const originRef = useRef<google.maps.places.Autocomplete | null>(null);
   const destRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+  // Order shelters by distance from destination (closest to destination = #1)
+  const orderSheltersFromDestination = useCallback((
+    shelters: ShelteredLinkwayFeature[],
+    destination: LatLngCoordinate
+  ): ShelteredLinkwayFeature[] => {
+    return [...shelters].sort((a, b) => {
+      const centroidA = getShelteredLinkwayCentroid(a);
+      const centroidB = getShelteredLinkwayCentroid(b);
+
+      // Calculate distance from destination using Haversine formula
+      const distanceA = calculateHaversineDistance(centroidA, destination);
+      const distanceB = calculateHaversineDistance(centroidB, destination);
+
+      return distanceA - distanceB; // Closest first
+    });
+  }, []);
+
+  // Calculate Haversine distance between two lat/lng points (in meters)
+  const calculateHaversineDistance = (point1: LatLngCoordinate, point2: LatLngCoordinate): number => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = (point1.lat * Math.PI) / 180;
+    const φ2 = (point2.lat * Math.PI) / 180;
+    const Δφ = ((point2.lat - point1.lat) * Math.PI) / 180;
+    const Δλ = ((point2.lng - point1.lng) * Math.PI) / 180;
+
+    const a =
+      Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c;
+  };
+
+  // Calculate shelter parameters based on slider value (0-100) and route distance
+  const calculateShelterParams = useCallback((preferenceValue: number, routeDistanceMeters: number) => {
+    // If slider is 0, return 0 shelters
+    if (preferenceValue === 0) {
+      return {
+        maxResults: 0,
+        bufferDistance: 0,
+        maxWaypoints: 0,
+      };
+    }
+
+    // Base calculation: 1 shelter per 500m for preference = 50
+    const routeDistanceKm = routeDistanceMeters / 1000;
+    const baseSheltersPerKm = 2; // 1 shelter per 500m at 50% preference
+
+    // Scale based on preference (0-100)
+    // At 25%: 0.5x shelters, At 50%: 1x shelters, At 75%: 1.5x shelters, At 100%: 2x shelters
+    const preferenceMultiplier = preferenceValue / 50;
+
+    const calculatedShelters = Math.ceil(routeDistanceKm * baseSheltersPerKm * preferenceMultiplier);
+
+    // Ensure at least 1 shelter if preference > 0, max 25 (Google Maps API limit)
+    const maxResults = Math.min(Math.max(1, calculatedShelters), 25);
+
+    // Buffer distance scales with preference: 200m (low) to 500m (high)
+    const bufferDistance = 200 + (preferenceValue / 100) * 300;
+
+    // Max waypoints scales: 1-8 based on preference
+    const maxWaypoints = Math.min(Math.max(1, Math.ceil(maxResults / 3)), 8);
+
+    console.log(`Shelter calculation: preference=${preferenceValue}%, distance=${routeDistanceKm.toFixed(2)}km, maxResults=${maxResults}, buffer=${bufferDistance.toFixed(0)}m, maxWaypoints=${maxWaypoints}`);
+
+    return {
+      maxResults,
+      bufferDistance: Math.round(bufferDistance),
+      maxWaypoints,
+    };
+  }, []);
 
   // Load sheltered linkway data on component mount
   useEffect(() => {
@@ -252,17 +331,31 @@ const Map: React.FC = () => {
 
       // Filter sheltered linkways and optionally add them as waypoints
       if (shelteredLinkwayData && originCoordinates && destCoordinates) {
+        // Get route distance for proportional calculation
+        const routeDistance = results.routes[0]?.legs?.reduce(
+          (total, leg) => total + (leg.distance?.value || 0),
+          0
+        ) || 1000; // Default to 1km if distance unavailable
+
+        // Calculate shelter parameters based on user preference and route distance
+        const shelterParams = calculateShelterParams(shelterPreference, routeDistance);
+
         const filtered = filterShelteredLinkwaysInBoundary(
           originCoordinates,
           destCoordinates,
           shelteredLinkwayData,
           {
-            bufferDistance: 300, // 300m buffer from route line
-            maxResults: 5, // Limit to 5 results to avoid too many waypoints
+            bufferDistance: shelterParams.bufferDistance,
+            maxResults: shelterParams.maxResults,
             strictFiltering: true, // Use strict filtering along route line
           }
         );
         setFilteredLinkways(filtered);
+
+        // Order shelters from destination for numbering
+        const ordered = orderSheltersFromDestination(filtered, destCoordinates);
+        setOrderedShelters(ordered);
+
         console.groupCollapsed("Filtered sheltered linkways");
         console.log(`count: ${filtered.length}`);
         try {
@@ -311,14 +404,14 @@ const Map: React.FC = () => {
         });
 
         // If auto-add is enabled and we have linkways, add them as waypoints and recalculate
-        if (autoAddLinkwayWaypoints && filtered.length > 0) {
+        if (autoAddLinkwayWaypoints && filtered.length > 0 && shelterParams.maxResults > 0) {
           // Use the current route result to select optimal waypoints that minimize detours
           const optimalLinkwayWaypoints = selectOptimalLinkwayWaypoints(
             results,
             filtered,
             {
               maxDetourRatio: 1.2, // Allow maximum 20% detour
-              maxWaypoints: 3, // Limit to 3 waypoints to avoid complexity
+              maxWaypoints: shelterParams.maxWaypoints, // Use calculated waypoints based on preference
               minDistanceBetweenWaypoints: 300, // 300m minimum distance between waypoints
             }
           );
@@ -429,6 +522,8 @@ const Map: React.FC = () => {
     shelteredLinkwayData,
     autoAddLinkwayWaypoints,
     getRouteDetails,
+    shelterPreference,
+    calculateShelterParams,
   ]);
 
   const clearRoute = useCallback(() => {
@@ -609,7 +704,7 @@ const Map: React.FC = () => {
             </div>
           </div>
           <div className={styles.pillGroup}>
-            <PillToggle 
+            <PillToggle
               tabs={[{
                 id: RouteMode.WALKING,
                 label: "Walking",
@@ -621,6 +716,10 @@ const Map: React.FC = () => {
               }]} onChange={handleToggleChange} />
           </div>
         </div>
+        <ShelterSlider
+          value={shelterPreference}
+          onChange={setShelterPreference}
+        />
         <div style={{ display: "flex", gap: "10px"}}>
             <button
             onClick={calculateRouteWithLogging}
@@ -756,7 +855,7 @@ const Map: React.FC = () => {
             />
           )}
 
-          {/* Render sheltered linkway polygons */}
+          {/* Render sheltered linkway polygons with subtle cyan */}
           {filteredLinkways.length > 0 &&
             convertShelteredLinkwayToGoogleMapsPolygons(filteredLinkways).map(
               (polygonPath, index) => (
@@ -764,15 +863,30 @@ const Map: React.FC = () => {
                   key={`linkway-${index}`}
                   paths={polygonPath}
                   options={{
-                    fillColor: "#00ff00",
-                    fillOpacity: 0.3,
-                    strokeColor: "#00aa00",
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
+                    fillColor: "#06B6D4",
+                    fillOpacity: 0.2,
+                    strokeColor: "#06B6D4",
+                    strokeOpacity: 0.5,
+                    strokeWeight: 1.5,
                   }}
                 />
               )
             )}
+
+          {/* Render numbered markers for shelters (ordered from destination) */}
+          {orderedShelters.length > 0 &&
+            orderedShelters.map((shelter, index) => {
+              const centroid = getShelteredLinkwayCentroid(shelter);
+              return (
+                <Marker
+                  key={`shelter-marker-${index}`}
+                  position={{ lat: centroid.lat, lng: centroid.lng }}
+                  icon={createShelterMarkerIcon(index + 1)}
+                  title={`Shelter ${index + 1}`}
+                  zIndex={1000 + index}
+                />
+              );
+            })}
 
           {/* Render clicked markers */}
           {markers.map((marker, index) => (
