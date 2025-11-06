@@ -387,7 +387,7 @@ const Map: React.FC = () => {
         destination: destination,
         waypoints: waypointObjects.length > 0 ? waypointObjects : undefined,
         optimizeWaypoints: waypointObjects.length > 1, // Optimize order if multiple waypoints
-        travelMode: google.maps.TravelMode.WALKING,
+        travelMode: routeMode, // Use selected travel mode (walking or bicycling)
         provideRouteAlternatives: true,
       });
 
@@ -548,7 +548,7 @@ const Map: React.FC = () => {
               destination: destination,
               waypoints: allWaypointObjects,
               optimizeWaypoints: false, // Don't reorder since we've already optimized positions
-              travelMode: google.maps.TravelMode.WALKING, // Use walking for sheltered paths
+              travelMode: routeMode, // Use selected travel mode (walking or bicycling)
               provideRouteAlternatives: true,
             });
 
@@ -594,6 +594,7 @@ const Map: React.FC = () => {
     getRouteDetails,
     shelterPreference,
     calculateShelterParams,
+    routeMode,
   ]);
 
   const clearRoute = useCallback(() => {
