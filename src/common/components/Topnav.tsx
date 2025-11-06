@@ -18,10 +18,11 @@ import BluePin from "../icons/BluePin";
 import Beat from "../icons/Beat";
 import Trophy from "../icons/Trophy";
 import Handshake from "../icons/Handshake";
+import Info from "../icons/Info";
 
 
 const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about'];
-const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN', React.JSX.Element> = {
+const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN' | 'INFO', React.JSX.Element> = {
    BLUEPIN: <BluePin />,
    TAG: <Tag />,
    TRENDINGUP: <TrendingUp />,
@@ -29,6 +30,7 @@ const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HAND
    BEAT: <Beat />,
    TROPHY: <Trophy stroke="#052F5F" />,
    HANDSHAKE: <Handshake stroke="#052F5F" />,
+   INFO: <Info stroke="#052F5F" />,
 };
 
 const Topnav: React.FC = () => {

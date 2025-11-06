@@ -4,7 +4,7 @@ const NAV_LINKS = [
    { label: 'Challenge Hub', path: '/challengeHub', icon: 'TROPHY' },
    { label: 'Challenge Tracker', path: '/challengeTracker', icon: 'BEAT' },
    { label: 'Sponsorship', path: '/sponsorship', icon: 'HANDSHAKE' },
-   { label: 'About', path: '/about', icon: 'GRID' },
+   { label: 'About', path: '/about', icon: 'INFO' },
 ];
 
 export default NAV_LINKS;
