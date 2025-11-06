@@ -19,6 +19,12 @@ import {
   type LatLngCoordinate,
 } from "@/common/utils/shelteredLinkway";
 import { createShelterMarkerIcon } from "@/common/utils/shelterMarkerIcon";
+import {
+  fetchTemperatureData,
+  combineStationsWithReadings,
+  getNearestTemperature,
+  type TemperatureStationWithReading,
+} from "@/common/utils/temperature";
 
 import styles from "./Map.module.css";
 import PillToggle from "./PillTabs";
@@ -100,6 +106,9 @@ const Map: React.FC = () => {
   const [routeMode, setRouteMode] = useState<google.maps.TravelMode>(
     RouteMode.WALKING
   );
+  const [temperatureStations, setTemperatureStations] = useState<
+    TemperatureStationWithReading[]
+  >([]);
 
   const handleToggleChange = () => {
     const toggledMode = routeMode === RouteMode.WALKING
@@ -133,6 +142,39 @@ const Map: React.FC = () => {
       return distanceA - distanceB; // Closest first
     });
   }, []);
+
+  // Calculate temperature statistics for a route
+  const getRouteTemperatureStats = useCallback(
+    (route: google.maps.DirectionsRoute): { avg: number; max: number } | null => {
+      if (!route.overview_path || route.overview_path.length === 0 || temperatureStations.length === 0) {
+        return null;
+      }
+
+      // Sample points along the route (every 10th point to optimize performance)
+      const sampleInterval = Math.max(1, Math.floor(route.overview_path.length / 20));
+      const temperatures: number[] = [];
+
+      for (let i = 0; i < route.overview_path.length; i += sampleInterval) {
+        const point = route.overview_path[i];
+        const temp = getNearestTemperature(
+          point.lat(),
+          point.lng(),
+          temperatureStations
+        );
+        if (temp !== null) {
+          temperatures.push(temp);
+        }
+      }
+
+      if (temperatures.length === 0) return null;
+
+      const avg = temperatures.reduce((sum, t) => sum + t, 0) / temperatures.length;
+      const max = Math.max(...temperatures);
+
+      return { avg: Math.round(avg * 10) / 10, max: Math.round(max * 10) / 10 };
+    },
+    [temperatureStations]
+  );
 
   // Calculate Haversine distance between two lat/lng points (in meters)
   const calculateHaversineDistance = (point1: LatLngCoordinate, point2: LatLngCoordinate): number => {
@@ -243,6 +285,34 @@ const Map: React.FC = () => {
       }
     };
     loadData();
+  }, []);
+
+  // Load temperature data on component mount
+  useEffect(() => {
+    const loadTemperatureData = async () => {
+      try {
+        const data = await fetchTemperatureData();
+        if (data) {
+          const stationsWithReadings = combineStationsWithReadings(data);
+          setTemperatureStations(stationsWithReadings);
+          console.groupCollapsed("Temperature: loaded data");
+          console.log(`Station count: ${stationsWithReadings.length}`);
+          console.table(
+            stationsWithReadings.map((station) => ({
+              id: station.id,
+              name: station.name,
+              temperature: station.temperature,
+              lat: station.location.latitude,
+              lng: station.location.longitude,
+            }))
+          );
+          console.groupEnd();
+        }
+      } catch (error) {
+        console.error("Failed to load temperature data:", error);
+      }
+    };
+    loadTemperatureData();
   }, []);
 
   // Update shelters when route selection changes (using appliedShelterPreference, NOT live shelterPreference)
@@ -891,8 +961,7 @@ const Map: React.FC = () => {
                       }}
                     >
                       <Route style={{position: "relative", top:"3px"}} stroke={selectedRouteIndex === index ? "#FFF" : "#064E3B"} />
-                      Option {index + 1}: {details.duration} |{" "}
-                      {details.distance}
+                      Option {index + 1}: {details.duration} | {details.distance}
                     </button>
                   );
                 })}
@@ -952,7 +1021,7 @@ const Map: React.FC = () => {
         </GoogleMap>
       </div>
 
-      {duration && distance && <div style={{ 
+      {duration && distance && <div style={{
         borderRadius: "16px",
         border: "3px solid #D1EEF8",
         boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
@@ -969,6 +1038,15 @@ const Map: React.FC = () => {
         <div style={{marginTop: '8px'}}>
           <Pill label={`+ Tree lined streets`} />
           <Pill label={`+ ${filteredLinkways?.length} Sheltered Linkways`} />
+          {routeOptions[selectedRouteIndex] && (() => {
+            const tempStats = getRouteTemperatureStats(routeOptions[selectedRouteIndex]);
+            return tempStats ? (
+              <>
+                <Pill label={`Avg Temp: ${tempStats.avg}°C`} />
+                <Pill label={`Max Temp: ${tempStats.max}°C`} />
+              </>
+            ) : null;
+          })()}
         </div>
       </div>}
     </div>
