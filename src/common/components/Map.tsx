@@ -1035,7 +1035,7 @@ const Map: React.FC = () => {
           <div><Pill label={routeMode}/></div>
         </div>
         <div style={{ color: "#7AA9C3", display: "flex", alignItems: "center", gap: "4px" }}><Clock stroke="#7AA9C3" />{duration}   <MapIcon />{distance}</div>
-        <div style={{marginTop: '8px'}}>
+        <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Pill label={`+ Tree lined streets`} />
           <Pill label={`+ ${filteredLinkways?.length} Sheltered Linkways`} />
           {routeOptions[selectedRouteIndex] && (() => {
