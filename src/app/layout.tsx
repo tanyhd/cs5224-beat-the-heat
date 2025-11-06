@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import Topnav from "@/common/components/Topnav";
 import "./globals.css";
 import PageContainer from "@/common/components/PageContainer";
-import ChatWidget from "@/features/chatbot/ChatWidget";
+// import ChatWidget from "@/features/chatbot/ChatWidget";
 
 const inter = Inter({
   subsets: ['latin'],
@@ -28,7 +28,7 @@ export default function RootLayout({
         <PageContainer>
           {children}
         </PageContainer>
-        <ChatWidget/>
+        {/* <ChatWidget/> */}
       </body>
     </html>
   );
