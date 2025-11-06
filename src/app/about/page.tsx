@@ -37,7 +37,13 @@ export default function About() {
               prioritizes shaded paths, sheltered linkways, and tree-lined streets to minimize your heat
               exposure while getting you to your destination.
             </p>
-            <p><em>Simply enter your start and end points, and let us find the coolest path for you.</em></p>
+            <p>
+              <strong>Adjustable Shelter Preference:</strong> Use the shelter slider to control how much the
+              route prioritizes sheltered linkways. Set it low for the fastest route with minimal shelter, or
+              high to maximize coverage through sheltered areas. The route automatically adjusts to pass through
+              numbered shelter points based on your preference.
+            </p>
+            <p><em>Simply enter your start and end points, adjust your shelter preference, and let us find the coolest path for you.</em></p>
           </div>
 
           <div className={styles.feature}>
