@@ -20,7 +20,7 @@ import Trophy from "../icons/Trophy";
 import Handshake from "../icons/Handshake";
 
 
-const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map'];
+const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about'];
 const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN', React.JSX.Element> = {
    BLUEPIN: <BluePin />,
    TAG: <Tag />,
