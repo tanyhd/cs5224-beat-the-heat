@@ -909,7 +909,7 @@ const Map: React.FC = () => {
               directions={directionsResponse}
               routeIndex={selectedRouteIndex}
               options={{
-                suppressMarkers: false,
+                suppressMarkers: true, // Suppress default Google Maps markers (origin, destination, waypoints)
               }}
             />
           )}
@@ -936,9 +936,11 @@ const Map: React.FC = () => {
           {orderedShelters.length > 0 &&
             orderedShelters.map((shelter, index) => {
               const centroid = getShelteredLinkwayCentroid(shelter);
+              // Create unique key using route index, shelter coordinates, and index
+              const uniqueKey = `shelter-${selectedRouteIndex}-${centroid.lat.toFixed(6)}-${centroid.lng.toFixed(6)}-${index}`;
               return (
                 <Marker
-                  key={`shelter-marker-${index}`}
+                  key={uniqueKey}
                   position={{ lat: centroid.lat, lng: centroid.lng }}
                   icon={createShelterMarkerIcon(index + 1)}
                   title={`Shelter ${index + 1}`}
@@ -946,31 +948,6 @@ const Map: React.FC = () => {
                 />
               );
             })}
-
-
-          {/* Render optimal waypoint markers */}
-          {optimalWaypoints.map((waypoint, index) => (
-            <Marker
-              key={`waypoint-${index}`}
-              position={waypoint}
-              icon={{
-                url:
-                  "data:image/svg+xml;charset=UTF-8," +
-                  encodeURIComponent(`
-                  <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="10" cy="10" r="8" fill="#FF6B35" stroke="white" stroke-width="2"/>
-                    <text x="10" y="14" text-anchor="middle" fill="white" font-size="10" font-weight="bold">${
-                      index + 1
-                    }</text>
-                  </svg>
-                `),
-                scaledSize: new google.maps.Size(20, 20),
-              }}
-              title={`Optimal Waypoint ${index + 1}: ${waypoint.lat.toFixed(
-                6
-              )}, ${waypoint.lng.toFixed(6)}`}
-            />
-          ))}
         </GoogleMap>
       </div>
 
