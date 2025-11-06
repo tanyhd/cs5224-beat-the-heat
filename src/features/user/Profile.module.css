@@ -38,3 +38,58 @@
 .confirmDeleteButtons .button {
    margin-top: 0;
 }
+
+.eyeIcon {
+   right: 24px;
+   position: relative;
+   cursor: pointer;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+   .container {
+      max-width: 60%;
+   }
+}
+
+@media (max-width: 768px) {
+   .container {
+      max-width: 85%;
+      padding: 0 16px;
+   }
+
+   .card.card {
+      margin-bottom: 24px;
+   }
+
+   .button.button {
+      max-width: 100%;
+      width: 100%;
+   }
+
+   .confirmDeleteButtons {
+      flex-direction: column;
+      width: 100%;
+   }
+
+   .confirmDeleteButtons .button {
+      max-width: 100%;
+      width: 100%;
+   }
+}
+
+@media (max-width: 480px) {
+   .container {
+      max-width: 95%;
+      padding: 0 12px;
+   }
+
+   .subSection {
+      padding: 16px 0 8px;
+      font-size: 16px;
+   }
+
+   .confirmDelete p {
+      font-size: 14px;
+   }
+}

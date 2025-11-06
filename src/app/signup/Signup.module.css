@@ -63,9 +63,45 @@
    top: -4px;
 }
 
-@media (max-width: 1068px) {
+/* Responsive Styles */
+@media (max-width: 1200px) {
+   .form {
+      width: 50%;
+   }
+
    .checkboxContainer {
       width: 99%;
    }
-   
+}
+
+@media (max-width: 768px) {
+   .form {
+      width: 80%;
+   }
+}
+
+@media (max-width: 480px) {
+   .form {
+      width: 90%;
+      padding: 0 16px;
+   }
+
+   .caption {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+   }
+
+   .link {
+      margin-left: 0;
+   }
+
+   .checkboxContainer {
+      width: 100%;
+   }
+
+   .checkboxText {
+      font-size: 13px;
+   }
 }

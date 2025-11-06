@@ -1,0 +1,50 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 700;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.8;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.text {
+  white-space: nowrap;
+  color: #052F5F;
+}
+
+/* Size variants */
+.small .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.small .text {
+  font-size: 14px;
+}
+
+.medium .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.medium .text {
+  font-size: 16px;
+}
+
+.large .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.large .text {
+  font-size: 18px;
+}

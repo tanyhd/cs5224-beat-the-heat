@@ -19,6 +19,11 @@ import Beat from "../icons/Beat";
 import Trophy from "../icons/Trophy";
 import Handshake from "../icons/Handshake";
 import Info from "../icons/Info";
+import Menu from "../icons/Menu";
+import X from "../icons/X";
+import Logo from "./Logo";
+import Lock from "../icons/Lock";
+import AvatarPlus from "../icons/AvatarPlus";
 
 
 const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about'];
@@ -38,6 +43,7 @@ const Topnav: React.FC = () => {
    const [isAuthenticated, setIsAuthenticated] = useState(false);
    const [profileMenuToggle, setProfileMenuToggle] = useState(false);
    const [isMounted, setIsMounted] = useState(false);
+   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
    useEffect(() => {
       const token = typeof window !== 'undefined' && sessionStorage.getItem('userToken');
@@ -54,7 +60,7 @@ const Topnav: React.FC = () => {
             isOpen={isAuthModalOpen}
             onAfterOpen={() => {
                setTimeout(() => {
-                  location.href="/login" 
+                  location.href="/login"
                }, LOADING_DELAY);
             }}
          >
@@ -65,6 +71,69 @@ const Topnav: React.FC = () => {
                </Loading>
             </div>
          </Modal>
+
+         {/* Mobile logo and menu */}
+         <div className={styles.mobileHeader}>
+            <Logo size="medium" className={styles.mobileLogo} />
+            <button
+               className={styles.mobileMenuButton}
+               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+               aria-label="Toggle menu"
+            >
+               {mobileMenuOpen ? <X stroke="#052F5F" /> : <Menu stroke="#052F5F" />}
+            </button>
+         </div>
+
+         {/* Mobile menu drawer */}
+         {mobileMenuOpen && (
+            <div className={styles.mobileMenuOverlay} onClick={() => setMobileMenuOpen(false)}>
+               <div className={styles.mobileMenuDrawer} onClick={(e) => e.stopPropagation()}>
+                  {NAV_LINKS.map((link) => (
+                     <a
+                        key={link.path}
+                        href={link.path}
+                        className={styles.mobileMenuLink}
+                        onClick={() => setMobileMenuOpen(false)}
+                     >
+                        {link.icon && ICON_MAP[link.icon as keyof typeof ICON_MAP]}
+                        <span>{link.label}</span>
+                     </a>
+                  ))}
+                  {isMounted && (
+                     <div className={styles.mobileMenuAuth}>
+                        {isAuthenticated ? (
+                           <>
+                              <a href="/profile" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
+                                 <Avatar stroke={"#06B6D4"} />
+                                 <span>Manage Profile</span>
+                              </a>
+                              <a href="/cards" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
+                                 <CreditCard stroke={"#FF5827"} />
+                                 <span>Manage Cards</span>
+                              </a>
+                              <a href="/login" className={styles.mobileMenuLink} onClick={() => {sessionStorage.removeItem('userToken'); setMobileMenuOpen(false);}}>
+                                 <Logout stroke="#06B6D4" />
+                                 <span>Sign out</span>
+                              </a>
+                           </>
+                        ) : (
+                           <>
+                              <a href="/login" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
+                                 <Lock stroke="#06B6D4" />
+                                 <span>Login</span>
+                              </a>
+                              <a href="/signup" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
+                                 <AvatarPlus stroke="#06B6D4" />
+                                 <span>Sign up</span>
+                              </a>
+                           </>
+                        )}
+                     </div>
+                  )}
+               </div>
+            </div>
+         )}
+
          <div className={styles.left}>
             {NAV_LINKS.map((link) => (
                <a
