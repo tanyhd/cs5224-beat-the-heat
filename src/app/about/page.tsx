@@ -43,6 +43,15 @@ export default function About() {
               high to maximize coverage through sheltered areas. The route automatically adjusts to pass through
               numbered shelter points based on your preference.
             </p>
+            <p>
+              <strong>Temperature Display:</strong> View real-time temperature data along your route, including
+              average and maximum temperatures, helping you make informed decisions about your journey.
+            </p>
+            <p>
+              <strong>Save & Share Routes:</strong> Save your favorite routes for quick access later, and share
+              them with friends or family via a shareable link. Perfect for planning group activities or sharing
+              your go-to cool paths.
+            </p>
             <p><em>Simply enter your start and end points, adjust your shelter preference, and let us find the coolest path for you.</em></p>
           </div>
 
