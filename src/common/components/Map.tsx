@@ -121,6 +121,9 @@ const Map: React.FC = () => {
   const [loadingSavedRoutes, setLoadingSavedRoutes] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [routeToDelete, setRouteToDelete] = useState<string | null>(null);
+  const [showShareModal, setShowShareModal] = useState<boolean>(false);
+  const [shareUrl, setShareUrl] = useState<string>("");
+  const [routeToShare, setRouteToShare] = useState<any>(null);
 
   const handleToggleChange = () => {
     const toggledMode = routeMode === RouteMode.WALKING
@@ -358,6 +361,39 @@ const Map: React.FC = () => {
     fetchSavedRoutes();
   }, []);
 
+  // Load shared route from sessionStorage if coming from shared link
+  useEffect(() => {
+    const sharedRouteData = sessionStorage.getItem('sharedRouteData');
+    if (sharedRouteData) {
+      try {
+        const route = JSON.parse(sharedRouteData);
+
+        // Clear the sessionStorage after reading
+        sessionStorage.removeItem('sharedRouteData');
+
+        // Load route data into form
+        setOrigin(route.origin.address);
+        setDestination(route.destination.address);
+        setShelterPreference(route.preferences.shelterLevel);
+        setAppliedShelterPreference(route.preferences.shelterLevel);
+        setRouteMode(route.preferences.travelMode);
+
+        // Store the route index to select after calculation
+        setLoadedRouteIndex(route.selectedRouteIndex || 0);
+
+        setNotificationState({
+          message: `Loaded shared route: ${route.routeName}`,
+          type: NotificationTypeEnum.SUCCESS,
+        });
+
+        // Trigger auto-calculation
+        setShouldAutoCalculate(true);
+      } catch (error) {
+        console.error('Error loading shared route:', error);
+      }
+    }
+  }, []);
+
   // Function to save current route
   const handleSaveRoute = async () => {
     const userToken = sessionStorage.getItem('userToken');
@@ -501,6 +537,65 @@ const Map: React.FC = () => {
     } finally {
       setRouteToDelete(null);
     }
+  };
+
+  // Function to share a saved route
+  const handleShareRoute = async (route: any) => {
+    const userToken = sessionStorage.getItem('userToken');
+    if (!userToken) return;
+
+    try {
+      const response = await fetch('/api/routes/share', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          routeId: route._id,  // Include the saved route ID
+          routeName: route.routeName,
+          origin: route.origin,
+          destination: route.destination,
+          preferences: route.preferences,
+          routeData: route.routeData,
+          selectedRouteIndex: route.selectedRouteIndex,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setShareUrl(data.shareUrl);
+        setRouteToShare(route);
+        setShowShareModal(true);
+
+        // Show different message for existing vs new share
+        if (data.isExisting) {
+          setNotificationState({
+            message: 'Using existing share link',
+            type: NotificationTypeEnum.SUCCESS,
+          });
+        }
+      } else {
+        setNotificationState({
+          message: 'Failed to share route',
+          type: NotificationTypeEnum.ERROR,
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing route:', error);
+      setNotificationState({
+        message: 'Error sharing route',
+        type: NotificationTypeEnum.ERROR,
+      });
+    }
+  };
+
+  const handleCopyShareLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setNotificationState({
+      message: 'Link copied to clipboard!',
+      type: NotificationTypeEnum.SUCCESS,
+    });
   };
 
   // Function to load a saved route
@@ -962,11 +1057,11 @@ const Map: React.FC = () => {
 
   // Auto-calculate route when loading a saved route
   useEffect(() => {
-    if (shouldAutoCalculate && origin && destination) {
+    if (shouldAutoCalculate && origin && destination && isLoaded) {
       calculateRoute();
       setShouldAutoCalculate(false);
     }
-  }, [shouldAutoCalculate, origin, destination, calculateRoute]);
+  }, [shouldAutoCalculate, origin, destination, isLoaded, calculateRoute]);
 
   // Select the correct route option after calculation when loading a saved route
   useEffect(() => {
@@ -1022,68 +1117,53 @@ const Map: React.FC = () => {
       >
         <div style={{ color: "#064E3B", fontWeight: "bold", marginBottom: "10px" }}>Plan your route</div>
         {sessionStorage.getItem('userToken') && savedRoutes.length > 0 && (
-          <div style={{
-            marginBottom: "10px",
-            padding: "10px",
-            backgroundColor: "#FFF",
-            borderRadius: "12px",
-            border: "2px solid #D1EEF8"
-          }}>
-            <div style={{ fontSize: "12px", color: "#064E3B", fontWeight: "bold", marginBottom: "8px" }}>
+          <div className={styles.savedRoutesContainer}>
+            <div className={styles.savedRoutesTitle}>
               📌 My Saved Routes ({savedRoutes.length})
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "150px", overflowY: "auto" }}>
+            <div className={styles.savedRoutesList}>
               {savedRoutes.map((route) => (
                 <div
                   key={route._id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "8px",
-                    backgroundColor: "#F5FFFE",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                  }}
+                  className={styles.savedRouteItem}
                 >
                   <div
                     onClick={() => handleLoadSavedRoute(route._id)}
-                    style={{
-                      flex: 1,
-                      cursor: "pointer",
-                      color: "#064E3B"
-                    }}
+                    className={styles.savedRouteContent}
                   >
                     <strong>{route.routeName}</strong>
-                    <div style={{ fontSize: "10px", color: "#7AA9C3", marginTop: "4px" }}>
+                    <div className={styles.savedRouteAddress}>
                       📍 {route.origin.address} → {route.destination.address}
                     </div>
-                    <div style={{ fontSize: "11px", color: "#7AA9C3", marginTop: "4px" }}>
+                    <div className={styles.savedRouteDetails}>
                       {route.preferences.travelMode === RouteMode.WALKING ? '🚶 Walking' : '🚴 Bicycling'} • Shelter: {route.preferences.shelterLevel}%
                     </div>
-                    <div style={{ fontSize: "11px", color: "#7AA9C3" }}>
+                    <div className={styles.savedRouteDetails}>
                       {route.routeData.distance} • {route.routeData.duration}
                     </div>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteRoute(route._id);
-                    }}
-                    style={{
-                      padding: "4px 8px",
-                      borderRadius: "8px",
-                      border: "none",
-                      backgroundColor: "#FEE2E2",
-                      color: "#DC2626",
-                      fontSize: "12px",
-                      cursor: "pointer",
-                      fontWeight: "bold",
-                    }}
-                    title="Delete route"
-                  >
-                    🗑️
-                  </button>
+                  <div className={styles.savedRouteButtons}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShareRoute(route);
+                      }}
+                      className={styles.shareRouteButton}
+                      title="Share route"
+                    >
+                      📤
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteRoute(route._id);
+                      }}
+                      className={styles.deleteRouteButton}
+                      title="Delete route"
+                    >
+                      🗑️
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -1424,6 +1504,48 @@ const Map: React.FC = () => {
               }}
             >
               Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Share Route Modal */}
+      <Modal isOpen={showShareModal}>
+        <div className={styles.modalContainer}>
+          <h2 className={styles.modalTitleSmall}>📤 Share Route</h2>
+          <p className={styles.modalText}>
+            Share this route with anyone! They can view it by opening this link.
+          </p>
+
+          {routeToShare && (
+            <div className={styles.shareRouteInfoBox}>
+              <strong>{routeToShare.routeName}</strong>
+              <div className={styles.shareRouteSubtext}>
+                {routeToShare.origin.address} → {routeToShare.destination.address}
+              </div>
+            </div>
+          )}
+
+          <div className={styles.shareUrlBox}>
+            {shareUrl}
+          </div>
+
+          <div className={styles.modalButtonGroup}>
+            <button
+              onClick={() => {
+                setShowShareModal(false);
+                setShareUrl("");
+                setRouteToShare(null);
+              }}
+              className={styles.modalCancelButton}
+            >
+              Close
+            </button>
+            <button
+              onClick={handleCopyShareLink}
+              className={styles.modalPrimaryButton}
+            >
+              📋 Copy Link
             </button>
           </div>
         </div>

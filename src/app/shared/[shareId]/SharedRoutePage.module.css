@@ -1,0 +1,112 @@
+.loadingContainer {
+    padding: 20px;
+    text-align: center;
+}
+
+.notFoundContainer {
+    padding: 20px;
+    text-align: center;
+}
+
+.goToMapButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #06B6D4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.goToMapButton:hover {
+    background-color: #0891B2;
+    transform: translateY(-1px);
+}
+
+.pageContainer {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.routeDetailsCard {
+    background-color: #F5FFFE;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    border: 3px solid #D1EEF8;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.routeDetailsTitle {
+    color: #064E3B;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.locationSection {
+    margin-bottom: 12px;
+}
+
+.locationLabel {
+    color: #064E3B;
+}
+
+.locationAddress {
+    margin: 4px 0;
+    color: #064E3B;
+    font-size: 16px;
+}
+
+.statsContainer {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid #D1EEF8;
+}
+
+.statCard {
+    background-color: #FFF;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 2px solid #D1EEF8;
+}
+
+.statLabel {
+    font-size: 12px;
+    color: #7AA9C3;
+    margin-bottom: 4px;
+}
+
+.statValue {
+    font-weight: bold;
+    color: #064E3B;
+}
+
+.viewCount {
+    margin-top: 16px;
+    color: #7AA9C3;
+    font-size: 14px;
+}
+
+.viewOnMapButton {
+    width: 100%;
+    padding: 16px;
+    background-color: #06B6D4;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: all 0.2s ease;
+}
+
+.viewOnMapButton:hover {
+    background-color: #0891B2;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
+}

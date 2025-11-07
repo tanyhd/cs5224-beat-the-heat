@@ -26,7 +26,7 @@ import Lock from "../icons/Lock";
 import AvatarPlus from "../icons/AvatarPlus";
 
 
-const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about'];
+const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about', '/shared'];
 const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN' | 'INFO', React.JSX.Element> = {
    BLUEPIN: <BluePin />,
    TAG: <Tag />,
@@ -49,7 +49,11 @@ const Topnav: React.FC = () => {
       const token = typeof window !== 'undefined' && sessionStorage.getItem('userToken');
       setIsAuthenticated(!!token);
       setIsMounted(true);
-      if (!token && !NON_AUTH_PAGES.includes(location.pathname)) {
+      // Check if current path is a non-auth page or starts with a non-auth path prefix
+      const isNonAuthPage = NON_AUTH_PAGES.some(page =>
+         location.pathname === page || location.pathname.startsWith(page + '/')
+      );
+      if (!token && !isNonAuthPage) {
          setIsAuthModalOpen(true);
       }
    }, []);

@@ -14,6 +14,338 @@
     flex-direction: row;
 }
 
+/* Route Controls Section */
+.routeControlsContainer {
+    margin-bottom: 16px;
+    border-radius: 16px;
+    padding: 16px;
+    background: #F5FFFE;
+}
+
+.routeControlsTitle {
+    color: #064E3B;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.savedRoutesContainer {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #FFF;
+    border-radius: 12px;
+    border: 2px solid #D1EEF8;
+}
+
+.savedRoutesTitle {
+    font-size: 12px;
+    color: #064E3B;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.savedRoutesList {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.savedRouteItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: #F5FFFE;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.savedRouteContent {
+    flex: 1;
+    cursor: pointer;
+    color: #064E3B;
+}
+
+.savedRouteAddress {
+    font-size: 10px;
+    color: #7AA9C3;
+    margin-top: 4px;
+}
+
+.savedRouteDetails {
+    font-size: 11px;
+    color: #7AA9C3;
+    margin-top: 4px;
+}
+
+.savedRouteButtons {
+    display: flex;
+    gap: 4px;
+}
+
+.shareRouteButton {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: none;
+    background-color: #DBEAFE;
+    color: #06B6D4;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.deleteRouteButton {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: none;
+    background-color: #FEE2E2;
+    color: #DC2626;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* Input Controls */
+.inputControlsRow {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.inputGroupRow {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.innerInputGroupRow {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+.inputWrapper {
+    position: relative;
+    flex: 1;
+}
+
+.inputLabel {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    background-color: #F5FFFE;
+    padding: 0 4px;
+    font-size: 12px;
+    color: #064E3B;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.autocompleteInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: 16px;
+    border: 3px solid #D1EEF8;
+    font-size: 14px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.autocompleteInput:focus {
+    border-color: #06B6D4;
+}
+
+/* Action Buttons */
+.actionButtonsContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.calculateButton {
+    background-color: #06B6D4;
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 12px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.calculateButton:hover {
+    background-color: #0891B2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(6, 182, 212, 0.3);
+}
+
+.clearButton {
+    background-color: #EFFCFB;
+    color: #064E3B;
+    border: none;
+    border-radius: 16px;
+    padding: 12px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.clearButton:hover {
+    background-color: #D1EEF8;
+    transform: translateY(-1px);
+}
+
+.saveRouteButtonContainer {
+    margin-top: 10px;
+}
+
+.saveRouteButton {
+    width: 100%;
+    background-color: #FFF;
+    color: #06B6D4;
+    border: 2px solid #D1EEF8;
+    border-radius: 16px;
+    padding: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.saveRouteButton:hover {
+    background-color: #F0FDFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(6, 182, 212, 0.2);
+}
+
+/* Modal Styles */
+.modalContainer {
+    padding: 20px;
+    max-width: 500px;
+}
+
+.modalContainerSmall {
+    padding: 20px;
+    max-width: 400px;
+}
+
+.modalTitle {
+    color: #064E3B;
+    margin-bottom: 20px;
+}
+
+.modalTitleSmall {
+    color: #064E3B;
+    margin-bottom: 16px;
+}
+
+.modalText {
+    color: #064E3B;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.modalTextLarge {
+    color: #064E3B;
+    margin-bottom: 24px;
+    font-size: 14px;
+}
+
+.formGroup {
+    margin-bottom: 16px;
+}
+
+.formLabel {
+    display: block;
+    margin-bottom: 8px;
+    color: #064E3B;
+    font-weight: bold;
+}
+
+.formInput {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #D1EEF8;
+    font-size: 14px;
+}
+
+.routeSummaryBox {
+    padding: 12px;
+    background-color: #F5FFFE;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #064E3B;
+}
+
+.shareRouteInfoBox {
+    padding: 12px;
+    background-color: #F5FFFE;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #064E3B;
+}
+
+.shareRouteSubtext {
+    font-size: 12px;
+    color: #7AA9C3;
+    margin-top: 4px;
+}
+
+.shareUrlBox {
+    padding: 12px;
+    background-color: #FFF;
+    border: 2px solid #D1EEF8;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    word-break: break-all;
+    font-size: 14px;
+    color: #064E3B;
+}
+
+.modalButtonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.modalCancelButton {
+    flex: 1;
+    padding: 10px;
+    border-radius: 16px;
+    border: none;
+    background-color: #EFFCFB;
+    color: #064E3B;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modalPrimaryButton {
+    flex: 1;
+    padding: 10px;
+    border-radius: 16px;
+    border: none;
+    background-color: #06B6D4;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modalDeleteButton {
+    flex: 1;
+    padding: 10px;
+    border-radius: 16px;
+    border: none;
+    background-color: #EF4444;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 @media (max-width: 1068px) {
     .inputContainer {
         flex-direction: column;

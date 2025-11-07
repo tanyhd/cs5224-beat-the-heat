@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
 import { Long } from 'mongodb';
+import crypto from 'crypto';
 
 let cachedClient = null;
 let cachedDb = null;
@@ -368,7 +369,8 @@ export async function saveRoute(routeData) {
         // Save the selected route index so we can select the same option when loading
         selectedRouteIndex: routeData.selectedRouteIndex || 0,
         createdAt: currentTime,
-        isFavorite: true
+        isFavorite: true,
+        shareId: null  // Will be populated when route is shared
     };
 
     try {
@@ -433,5 +435,111 @@ export async function deleteSavedRoute(routeId, userId) {
     } catch (error) {
         console.error('Error deleting route:', error);
         return { status: '500', message: 'Error deleting route', error: error.message };
+    }
+}
+
+export async function updateSavedRouteShareId(routeId, userId, shareId) {
+    const database = await connectToDb();
+    const { ObjectId } = require('mongodb');
+
+    try {
+        const result = await database.collection('savedRoutes').updateOne(
+            {
+                _id: new ObjectId(routeId),
+                userId: userId
+            },
+            {
+                $set: { shareId: shareId }
+            }
+        );
+
+        if (result.modifiedCount > 0 || result.matchedCount > 0) {
+            return { status: '200', message: 'Route shareId updated successfully' };
+        } else {
+            return { status: '404', message: 'Route not found' };
+        }
+    } catch (error) {
+        console.error('Error updating route shareId:', error);
+        return { status: '500', message: 'Error updating route shareId', error: error.message };
+    }
+}
+
+// Shared Routes functions
+function generateShareId() {
+    // Generate a random 8-character URL-safe ID using Node.js crypto
+    return crypto.randomBytes(6).toString('base64url').slice(0, 8);
+}
+
+export async function createSharedRoute(routeData) {
+    const database = await connectToDb();
+    const currentTime = getCurrentTime();
+
+    // Generate unique share ID
+    let shareId = generateShareId();
+
+    // Check if shareId already exists, regenerate if needed
+    let existing = await database.collection('sharedRoutes').findOne({ shareId });
+    while (existing) {
+        shareId = generateShareId();
+        existing = await database.collection('sharedRoutes').findOne({ shareId });
+    }
+
+    const sharedRoute = {
+        shareId,
+        userId: routeData.userId,
+        routeName: routeData.routeName,
+        origin: {
+            address: routeData.origin.address,
+            lat: routeData.origin.lat,
+            lng: routeData.origin.lng
+        },
+        destination: {
+            address: routeData.destination.address,
+            lat: routeData.destination.lat,
+            lng: routeData.destination.lng
+        },
+        preferences: {
+            shelterLevel: routeData.preferences?.shelterLevel || 50,
+            travelMode: routeData.preferences?.travelMode || 'WALKING'
+        },
+        routeData: {
+            distance: routeData.routeData?.distance || '',
+            duration: routeData.routeData?.duration || '',
+            sheltersCount: routeData.routeData?.sheltersCount || 0
+        },
+        selectedRouteIndex: routeData.selectedRouteIndex || 0,
+        createdAt: currentTime,
+        viewCount: 0
+    };
+
+    try {
+        await database.collection('sharedRoutes').insertOne(sharedRoute);
+        return { status: '200', message: 'Route shared successfully', shareId };
+    } catch (error) {
+        console.error('Error creating shared route:', error);
+        return { status: '500', message: 'Error sharing route', error: error.message };
+    }
+}
+
+export async function getSharedRoute(shareId) {
+    const database = await connectToDb();
+
+    try {
+        const sharedRoute = await database.collection('sharedRoutes').findOne({ shareId });
+
+        if (!sharedRoute) {
+            return { status: '404', message: 'Shared route not found' };
+        }
+
+        // Increment view count
+        await database.collection('sharedRoutes').updateOne(
+            { shareId },
+            { $inc: { viewCount: 1 } }
+        );
+
+        return { status: '200', route: sharedRoute };
+    } catch (error) {
+        console.error('Error getting shared route:', error);
+        return { status: '500', message: 'Error getting shared route', error: error.message };
     }
 }
