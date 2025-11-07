@@ -386,7 +386,7 @@
     left: 12px;
     top: 62%;
     transform: translateY(-50%);
-    z-index: 1;
+    z-index: 0;
     color: #064E3B;
 }
 
@@ -395,7 +395,7 @@
     left: 12px;
     top: 60%;
     transform: translateY(-50%);
-    z-index: 1;
+    z-index: 0;
     color: #064E3B;
 }
 
