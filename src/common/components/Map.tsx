@@ -591,11 +591,60 @@ const Map: React.FC = () => {
   };
 
   const handleCopyShareLink = () => {
-    navigator.clipboard.writeText(shareUrl);
-    setNotificationState({
-      message: 'Link copied to clipboard!',
-      type: NotificationTypeEnum.SUCCESS,
-    });
+    try {
+      // Check if clipboard API is available (requires HTTPS)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          setNotificationState({
+            message: 'Link copied to clipboard!',
+            type: NotificationTypeEnum.SUCCESS,
+          });
+        }).catch((error) => {
+          console.error('Clipboard API failed:', error);
+          fallbackCopyToClipboard(shareUrl);
+        });
+      } else {
+        // Fallback for HTTP or older browsers
+        fallbackCopyToClipboard(shareUrl);
+      }
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      fallbackCopyToClipboard(shareUrl);
+    }
+  };
+
+  const fallbackCopyToClipboard = (text: string) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+
+      if (successful) {
+        setNotificationState({
+          message: 'Link copied to clipboard!',
+          type: NotificationTypeEnum.SUCCESS,
+        });
+      } else {
+        setNotificationState({
+          message: 'Please copy the link manually',
+          type: NotificationTypeEnum.ERROR,
+        });
+      }
+    } catch (error) {
+      console.error('Fallback copy failed:', error);
+      setNotificationState({
+        message: 'Please copy the link manually',
+        type: NotificationTypeEnum.ERROR,
+      });
+    }
   };
 
   // Function to load a saved route
