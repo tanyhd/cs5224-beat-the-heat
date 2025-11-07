@@ -861,22 +861,13 @@ const Map: React.FC = () => {
         provideRouteAlternatives: true,
       });
 
-      setDirectionsResponse(results);
-      setRouteOptions(results.routes || []);
+      // Store initial results but don't set state yet - wait to see if we'll merge with augmented routes
+      let finalDirectionsResponse = results;
+      let finalRouteOptions = results.routes || [];
 
       // Don't reset selectedRouteIndex if we're loading a saved route
       // (loadedRouteIndex will be set by the auto-select effect)
-      if (loadedRouteIndex === null) {
-        setSelectedRouteIndex(0);
-
-        // Set initial duration and distance for the first route
-        if (results.routes && results.routes[0]) {
-          const details = getRouteDetails(results.routes[0]);
-          setDuration(details.duration);
-          setDistance(details.distance);
-        }
-      }
-      // If loadedRouteIndex is set, the auto-select effect will handle setting duration/distance
+      let shouldSetInitialRoute = loadedRouteIndex === null;
 
 
       // Filter sheltered linkways along the first route (will update when route changes)
@@ -1042,21 +1033,26 @@ const Map: React.FC = () => {
               routes: mergedRoutes,
             } as unknown as google.maps.DirectionsResult;
 
-            setDirectionsResponse(mergedDirectionsResult);
-            setRouteOptions(mergedRoutes);
-
-            // Only reset to index 0 if NOT loading a saved route
-            if (loadedRouteIndex === null) {
-              setSelectedRouteIndex(0);
-
-              // Update duration/distance using the primary (original) route to avoid surprising the user
-              if (mergedRoutes[0]) {
-                const details = getRouteDetails(mergedRoutes[0]);
-                setDuration(details.duration);
-                setDistance(details.distance);
-              }
-            }
+            // Update final results with merged data
+            finalDirectionsResponse = mergedDirectionsResult;
+            finalRouteOptions = mergedRoutes;
           }
+        }
+      }
+
+      // Set all route state at once after all calculations are complete
+      setDirectionsResponse(finalDirectionsResponse);
+      setRouteOptions(finalRouteOptions);
+
+      // Only reset to index 0 if NOT loading a saved route
+      if (shouldSetInitialRoute) {
+        setSelectedRouteIndex(0);
+
+        // Set initial duration and distance for the first route
+        if (finalRouteOptions[0]) {
+          const details = getRouteDetails(finalRouteOptions[0]);
+          setDuration(details.duration);
+          setDistance(details.distance);
         }
       }
     } catch (error) {
@@ -1077,6 +1073,7 @@ const Map: React.FC = () => {
     shelterPreference,
     calculateShelterParams,
     routeMode,
+    loadedRouteIndex,
   ]);
 
   const clearRoute = useCallback(() => {
@@ -1099,11 +1096,11 @@ const Map: React.FC = () => {
 
   // Auto-calculate route when loading a saved route
   useEffect(() => {
-    if (shouldAutoCalculate && origin && destination && isLoaded) {
+    if (shouldAutoCalculate && origin && destination && isLoaded && shelteredLinkwayData) {
       calculateRoute();
       setShouldAutoCalculate(false);
     }
-  }, [shouldAutoCalculate, origin, destination, isLoaded, calculateRoute]);
+  }, [shouldAutoCalculate, origin, destination, isLoaded, shelteredLinkwayData, calculateRoute]);
 
   // Select the correct route option after calculation when loading a saved route
   useEffect(() => {
