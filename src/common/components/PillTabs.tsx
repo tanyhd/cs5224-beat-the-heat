@@ -12,6 +12,7 @@ type Tab = {
 type PillTabsProps = {
   tabs: Tab[];
   onChange: () => void;
+  value?: Tab['id']; // Optional controlled value
 };
 
 const ModeIcon = ({ isActive, mode }: { isActive: boolean, mode: "walking" | "bicycling" }) => {
@@ -23,8 +24,11 @@ const ModeIcon = ({ isActive, mode }: { isActive: boolean, mode: "walking" | "bi
   );
 };
 
-const PillTabs: React.FC<PillTabsProps> = ({ tabs, onChange }) => {
-  const [activeTab, setActiveTab] = useState<Tab['id'] | null>(tabs?.[0]?.id ?? null);
+const PillTabs: React.FC<PillTabsProps> = ({ tabs, onChange, value }) => {
+  const [internalActiveTab, setInternalActiveTab] = useState<Tab['id'] | null>(tabs?.[0]?.id ?? null);
+
+  // Use controlled value if provided, otherwise use internal state
+  const activeTab = value !== undefined ? value : internalActiveTab;
 
   const isActive = (tabId: Tab['id']): boolean => {
     return activeTab === tabId;
@@ -38,7 +42,10 @@ const PillTabs: React.FC<PillTabsProps> = ({ tabs, onChange }) => {
             key={tab.id}
             className={`pill-tab ${activeTab === tab.id ? 'active' : ''}`}
             onClick={() => {
-              setActiveTab(tab.id)
+              // Only update internal state if not controlled
+              if (value === undefined) {
+                setInternalActiveTab(tab.id);
+              }
               onChange();
             }}
             style={{display: 'flex', alignItems: 'center', gap: '8px'}}

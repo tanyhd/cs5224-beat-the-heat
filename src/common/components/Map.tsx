@@ -40,6 +40,7 @@ import Route from "../icons/Route";
 import Clock from "../icons/Clock";
 import MapIcon from "../icons/Map";
 import Notification, { NotificationType, NotificationTypeEnum } from "./Notification";
+import Modal from "./Modal";
 
 const containerStyle = {
   width: "100%",
@@ -114,6 +115,12 @@ const Map: React.FC = () => {
     message: '',
     type: null as NotificationType,
   });
+  const [showSaveModal, setShowSaveModal] = useState<boolean>(false);
+  const [routeName, setRouteName] = useState<string>("");
+  const [savedRoutes, setSavedRoutes] = useState<any[]>([]);
+  const [loadingSavedRoutes, setLoadingSavedRoutes] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [routeToDelete, setRouteToDelete] = useState<string | null>(null);
 
   const handleToggleChange = () => {
     const toggledMode = routeMode === RouteMode.WALKING
@@ -320,6 +327,238 @@ const Map: React.FC = () => {
     loadTemperatureData();
   }, []);
 
+  // Load saved routes when component mounts (if user is logged in)
+  useEffect(() => {
+    const fetchSavedRoutes = async () => {
+      const userToken = sessionStorage.getItem('userToken');
+      if (!userToken) {
+        return; // User not logged in
+      }
+
+      setLoadingSavedRoutes(true);
+      try {
+        const response = await fetch('/api/routes', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setSavedRoutes(data.routes || []);
+        }
+      } catch (error) {
+        console.error('Error fetching saved routes:', error);
+      } finally {
+        setLoadingSavedRoutes(false);
+      }
+    };
+
+    fetchSavedRoutes();
+  }, []);
+
+  // Function to save current route
+  const handleSaveRoute = async () => {
+    const userToken = sessionStorage.getItem('userToken');
+    if (!userToken) {
+      setNotificationState({
+        message: "Please login to save routes",
+        type: NotificationTypeEnum.WARNING,
+      });
+      return;
+    }
+
+    if (!routeName.trim()) {
+      setNotificationState({
+        message: "Please enter a route name",
+        type: NotificationTypeEnum.WARNING,
+      });
+      return;
+    }
+
+    try {
+      console.log('Saving route - selectedRouteIndex:', selectedRouteIndex);
+
+      const response = await fetch('/api/routes/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          routeName: routeName.trim(),
+          origin: {
+            address: origin,
+            lat: directionsResponse?.routes?.[selectedRouteIndex]?.legs?.[0]?.start_location.lat() || 0,
+            lng: directionsResponse?.routes?.[selectedRouteIndex]?.legs?.[0]?.start_location.lng() || 0,
+          },
+          destination: {
+            address: destination,
+            lat: directionsResponse?.routes?.[selectedRouteIndex]?.legs?.[directionsResponse.routes[selectedRouteIndex].legs.length - 1]?.end_location.lat() || 0,
+            lng: directionsResponse?.routes?.[selectedRouteIndex]?.legs?.[directionsResponse.routes[selectedRouteIndex].legs.length - 1]?.end_location.lng() || 0,
+          },
+          preferences: {
+            shelterLevel: appliedShelterPreference,
+            travelMode: routeMode,
+          },
+          routeData: {
+            distance: distance,
+            duration: duration,
+            sheltersCount: filteredLinkways.length,
+          },
+          selectedRouteIndex: selectedRouteIndex,
+        }),
+      });
+
+      if (response.ok) {
+        setNotificationState({
+          message: "Route saved successfully!",
+          type: NotificationTypeEnum.SUCCESS,
+        });
+        setShowSaveModal(false);
+        setRouteName("");
+
+        // Refresh saved routes list
+        const routesResponse = await fetch('/api/routes', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+          },
+        });
+        if (routesResponse.ok) {
+          const data = await routesResponse.json();
+          setSavedRoutes(data.routes || []);
+        }
+      } else {
+        setNotificationState({
+          message: "Failed to save route",
+          type: NotificationTypeEnum.ERROR,
+        });
+      }
+    } catch (error) {
+      console.error('Error saving route:', error);
+      setNotificationState({
+        message: "Error saving route",
+        type: NotificationTypeEnum.ERROR,
+      });
+    }
+  };
+
+  // State to track when to auto-calculate after loading
+  const [shouldAutoCalculate, setShouldAutoCalculate] = useState<boolean>(false);
+  const [loadedRouteIndex, setLoadedRouteIndex] = useState<number | null>(null);
+
+  // Function to delete a saved route
+  const handleDeleteRoute = (routeId: string) => {
+    setRouteToDelete(routeId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteRoute = async () => {
+    const userToken = sessionStorage.getItem('userToken');
+    if (!userToken || !routeToDelete) return;
+
+    setShowDeleteModal(false);
+
+    try {
+      const response = await fetch(`/api/routes/delete/${routeToDelete}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+      });
+
+      if (response.ok) {
+        setNotificationState({
+          message: 'Route deleted successfully',
+          type: NotificationTypeEnum.SUCCESS,
+        });
+
+        // Refresh saved routes list
+        const routesResponse = await fetch('/api/routes', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${userToken}`,
+          },
+        });
+        if (routesResponse.ok) {
+          const data = await routesResponse.json();
+          setSavedRoutes(data.routes || []);
+        }
+      } else {
+        setNotificationState({
+          message: 'Failed to delete route',
+          type: NotificationTypeEnum.ERROR,
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting route:', error);
+      setNotificationState({
+        message: 'Error deleting route',
+        type: NotificationTypeEnum.ERROR,
+      });
+    } finally {
+      setRouteToDelete(null);
+    }
+  };
+
+  // Function to load a saved route
+  const handleLoadSavedRoute = useCallback(async (routeId: string) => {
+    const userToken = sessionStorage.getItem('userToken');
+    if (!userToken || !routeId) return;
+
+    try {
+      const response = await fetch(`/api/routes/${routeId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${userToken}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const route = data.route;
+
+        // Clear existing route first
+        setDirectionsResponse(null);
+        setRouteOptions([]);
+        setSelectedRouteIndex(0);
+        setDuration("");
+        setDistance("");
+        setFilteredLinkways([]);
+        setOrderedShelters([]);
+        setWaypoints([]);
+        setOptimalWaypoints([]);
+
+        // Load route data into form
+        setOrigin(route.origin.address);
+        setDestination(route.destination.address);
+        setShelterPreference(route.preferences.shelterLevel);
+        setAppliedShelterPreference(route.preferences.shelterLevel);
+        setRouteMode(route.preferences.travelMode);
+
+        // Store the route index to select after calculation
+        const indexToLoad = route.selectedRouteIndex || 0;
+        setLoadedRouteIndex(indexToLoad);
+
+        setNotificationState({
+          message: `Loaded route: ${route.routeName}`,
+          type: NotificationTypeEnum.SUCCESS,
+        });
+
+        // Trigger auto-calculation via effect
+        setShouldAutoCalculate(true);
+      }
+    } catch (error) {
+      console.error('Error loading saved route:', error);
+      setNotificationState({
+        message: "Error loading route",
+        type: NotificationTypeEnum.ERROR,
+      });
+    }
+  }, []);
+
   // Update shelters when route selection changes (using appliedShelterPreference, NOT live shelterPreference)
   useEffect(() => {
     if (!shelteredLinkwayData || !directionsResponse || !routeOptions.length) {
@@ -414,6 +653,19 @@ const Map: React.FC = () => {
     return { duration: durationText, distance: distanceText };
   }, []);
 
+  // Function to select a route
+  const selectRoute = useCallback(
+    (index: number) => {
+      setSelectedRouteIndex(index);
+      if (routeOptions[index]) {
+        const details = getRouteDetails(routeOptions[index]);
+        setDuration(details.duration);
+        setDistance(details.distance);
+      }
+    },
+    [routeOptions, getRouteDetails]
+  );
+
   const calculateRoute = useCallback(async () => {
     if (!origin || !destination) {
       setNotificationState({
@@ -474,14 +726,20 @@ const Map: React.FC = () => {
 
       setDirectionsResponse(results);
       setRouteOptions(results.routes || []);
-      setSelectedRouteIndex(0);
 
-      // Set initial duration and distance for the first route
-      if (results.routes && results.routes[0]) {
-        const details = getRouteDetails(results.routes[0]);
-        setDuration(details.duration);
-        setDistance(details.distance);
+      // Don't reset selectedRouteIndex if we're loading a saved route
+      // (loadedRouteIndex will be set by the auto-select effect)
+      if (loadedRouteIndex === null) {
+        setSelectedRouteIndex(0);
+
+        // Set initial duration and distance for the first route
+        if (results.routes && results.routes[0]) {
+          const details = getRouteDetails(results.routes[0]);
+          setDuration(details.duration);
+          setDistance(details.distance);
+        }
       }
+      // If loadedRouteIndex is set, the auto-select effect will handle setting duration/distance
 
 
       // Filter sheltered linkways along the first route (will update when route changes)
@@ -649,14 +907,17 @@ const Map: React.FC = () => {
 
             setDirectionsResponse(mergedDirectionsResult);
             setRouteOptions(mergedRoutes);
-            // Keep the original route as the first selectable option
-            setSelectedRouteIndex(0);
 
-            // Update duration/distance using the primary (original) route to avoid surprising the user
-            if (mergedRoutes[0]) {
-              const details = getRouteDetails(mergedRoutes[0]);
-              setDuration(details.duration);
-              setDistance(details.distance);
+            // Only reset to index 0 if NOT loading a saved route
+            if (loadedRouteIndex === null) {
+              setSelectedRouteIndex(0);
+
+              // Update duration/distance using the primary (original) route to avoid surprising the user
+              if (mergedRoutes[0]) {
+                const details = getRouteDetails(mergedRoutes[0]);
+                setDuration(details.duration);
+                setDistance(details.distance);
+              }
             }
           }
         }
@@ -699,24 +960,41 @@ const Map: React.FC = () => {
     // setRouteTrees([]);
   }, []);
 
+  // Auto-calculate route when loading a saved route
+  useEffect(() => {
+    if (shouldAutoCalculate && origin && destination) {
+      calculateRoute();
+      setShouldAutoCalculate(false);
+    }
+  }, [shouldAutoCalculate, origin, destination, calculateRoute]);
+
+  // Select the correct route option after calculation when loading a saved route
+  useEffect(() => {
+    if (loadedRouteIndex !== null && routeOptions.length > 0) {
+      // Wait a bit to ensure route merging is complete
+      // This prevents selecting before the shelter waypoint routes are merged
+      const timer = setTimeout(() => {
+        // Make sure the route index is within bounds
+        const indexToSelect = Math.min(loadedRouteIndex, routeOptions.length - 1);
+
+        if (routeOptions[indexToSelect]) {
+          // Use selectRoute function (same as manual click) to ensure UI updates
+          selectRoute(indexToSelect);
+        }
+
+        // Clear the loaded route index after selection
+        setLoadedRouteIndex(null);
+      }, 500); // Wait 500ms for route merging to complete
+
+      return () => clearTimeout(timer);
+    }
+  }, [loadedRouteIndex, routeOptions, selectedRouteIndex, selectRoute]);
+
   const swapLocations = () => {
     const temp = origin;
     setOrigin(destination);
     setDestination(temp);
   };
-
-  // Function to select a route
-  const selectRoute = useCallback(
-    (index: number) => {
-      setSelectedRouteIndex(index);
-      if (routeOptions[index]) {
-        const details = getRouteDetails(routeOptions[index]);
-        setDuration(details.duration);
-        setDistance(details.distance);
-      }
-    },
-    [routeOptions, getRouteDetails]
-  );
 
   // Wrapped button handlers with logging (no hook indirection)
   const calculateRouteWithLogging = logButtonClick(
@@ -742,7 +1020,75 @@ const Map: React.FC = () => {
           background: "#F5FFFE",
         }}
       >
-        <div style={{ color: "#064E3B", fontWeight: "bold" }}>Plan your route</div>
+        <div style={{ color: "#064E3B", fontWeight: "bold", marginBottom: "10px" }}>Plan your route</div>
+        {sessionStorage.getItem('userToken') && savedRoutes.length > 0 && (
+          <div style={{
+            marginBottom: "10px",
+            padding: "10px",
+            backgroundColor: "#FFF",
+            borderRadius: "12px",
+            border: "2px solid #D1EEF8"
+          }}>
+            <div style={{ fontSize: "12px", color: "#064E3B", fontWeight: "bold", marginBottom: "8px" }}>
+              📌 My Saved Routes ({savedRoutes.length})
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "150px", overflowY: "auto" }}>
+              {savedRoutes.map((route) => (
+                <div
+                  key={route._id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "8px",
+                    backgroundColor: "#F5FFFE",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                  }}
+                >
+                  <div
+                    onClick={() => handleLoadSavedRoute(route._id)}
+                    style={{
+                      flex: 1,
+                      cursor: "pointer",
+                      color: "#064E3B"
+                    }}
+                  >
+                    <strong>{route.routeName}</strong>
+                    <div style={{ fontSize: "10px", color: "#7AA9C3", marginTop: "4px" }}>
+                      📍 {route.origin.address} → {route.destination.address}
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#7AA9C3", marginTop: "4px" }}>
+                      {route.preferences.travelMode === RouteMode.WALKING ? '🚶 Walking' : '🚴 Bicycling'} • Shelter: {route.preferences.shelterLevel}%
+                    </div>
+                    <div style={{ fontSize: "11px", color: "#7AA9C3" }}>
+                      {route.routeData.distance} • {route.routeData.duration}
+                    </div>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteRoute(route._id);
+                    }}
+                    style={{
+                      padding: "4px 8px",
+                      borderRadius: "8px",
+                      border: "none",
+                      backgroundColor: "#FEE2E2",
+                      color: "#DC2626",
+                      fontSize: "12px",
+                      cursor: "pointer",
+                      fontWeight: "bold",
+                    }}
+                    title="Delete route"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{ display: "flex", alignItems: "center", gap: "20px" }} className={styles.inputContainer}>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px" }} className={styles.inputGroup}>
             <div style={{ display: "flex", gap: "10px", flex: 1}} className={styles.innerInputGroup}>
@@ -863,7 +1209,9 @@ const Map: React.FC = () => {
                 id: RouteMode.BICYCLING,
                 label: "Bicycling",
                 content: null,
-              }]} onChange={handleToggleChange} />
+              }]}
+              value={routeMode}
+              onChange={handleToggleChange} />
           </div>
         </div>
         <ShelterSlider
@@ -925,7 +1273,161 @@ const Map: React.FC = () => {
             </button>
         </div>
 
+        {/* Save Route Button - only show when route is calculated and user is logged in */}
+        {directionsResponse && sessionStorage.getItem('userToken') && (
+          <div style={{ marginTop: "10px" }}>
+            <button
+              onClick={() => setShowSaveModal(true)}
+              style={{
+                backgroundColor: "#FFF",
+                color: "#06B6D4",
+                padding: "8px 16px",
+                width: "100%",
+                borderRadius: "16px",
+                border: "2px solid #06B6D4",
+                fontWeight: "bold",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#F0FDFF";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#FFF";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              Save This Route
+            </button>
+          </div>
+        )}
+
       </div>
+
+      {/* Save Route Modal */}
+      <Modal isOpen={showSaveModal}>
+        <div style={{ padding: "20px", maxWidth: "500px" }}>
+          <h2 style={{ color: "#064E3B", marginBottom: "20px" }}>💾 Save Route</h2>
+
+          <div style={{ marginBottom: "16px" }}>
+            <label style={{ display: "block", marginBottom: "8px", color: "#064E3B", fontWeight: "bold" }}>
+              Route Name *
+            </label>
+            <input
+              type="text"
+              value={routeName}
+              onChange={(e) => setRouteName(e.target.value)}
+              placeholder="e.g., Morning Commute to Office"
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "8px",
+                border: "2px solid #D1EEF8",
+                fontSize: "14px",
+              }}
+            />
+          </div>
+
+          <div style={{
+            padding: "12px",
+            backgroundColor: "#F5FFFE",
+            borderRadius: "8px",
+            marginBottom: "20px",
+            fontSize: "14px",
+            color: "#064E3B"
+          }}>
+            <div><strong>From:</strong> {origin}</div>
+            <div><strong>To:</strong> {destination}</div>
+            <div><strong>Mode:</strong> {routeMode === RouteMode.WALKING ? "🚶 Walking" : "🚴 Bicycling"}</div>
+            <div><strong>Shelter Level:</strong> {appliedShelterPreference}%</div>
+            <div><strong>Distance:</strong> {distance} | <strong>Duration:</strong> {duration}</div>
+          </div>
+
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => {
+                setShowSaveModal(false);
+                setRouteName("");
+              }}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "16px",
+                border: "none",
+                backgroundColor: "#EFFCFB",
+                color: "#064E3B",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSaveRoute}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "16px",
+                border: "none",
+                backgroundColor: "#06B6D4",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Save Route
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Delete Route Confirmation Modal */}
+      <Modal isOpen={showDeleteModal}>
+        <div style={{ padding: "20px", maxWidth: "400px" }}>
+          <h2 style={{ color: "#064E3B", marginBottom: "16px" }}>🗑️ Delete Route</h2>
+          <p style={{ color: "#064E3B", marginBottom: "24px", fontSize: "14px" }}>
+            Are you sure you want to delete this saved route? This action cannot be undone.
+          </p>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <button
+              onClick={() => {
+                setShowDeleteModal(false);
+                setRouteToDelete(null);
+              }}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "16px",
+                border: "none",
+                backgroundColor: "#EFFCFB",
+                color: "#064E3B",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={confirmDeleteRoute}
+              style={{
+                flex: 1,
+                padding: "10px",
+                borderRadius: "16px",
+                border: "none",
+                backgroundColor: "#EF4444",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+              }}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Map */}
       <div style={{

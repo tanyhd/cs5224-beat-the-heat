@@ -337,3 +337,101 @@ export async function getCreditCardsInfo(payload) {
     const database = await connectToDb();
     return await database.collection('creditCards').find({ userId: payload.userId }).toArray();
 }
+
+// Saved Routes functions
+export async function saveRoute(routeData) {
+    const database = await connectToDb();
+    const currentTime = getCurrentTime();
+
+    const routeDocument = {
+        userId: routeData.userId,
+        routeName: routeData.routeName,
+        origin: {
+            address: routeData.origin.address,
+            lat: routeData.origin.lat,
+            lng: routeData.origin.lng
+        },
+        destination: {
+            address: routeData.destination.address,
+            lat: routeData.destination.lat,
+            lng: routeData.destination.lng
+        },
+        preferences: {
+            shelterLevel: routeData.preferences?.shelterLevel || 50,
+            travelMode: routeData.preferences?.travelMode || 'WALKING'
+        },
+        routeData: {
+            distance: routeData.routeData?.distance || '',
+            duration: routeData.routeData?.duration || '',
+            sheltersCount: routeData.routeData?.sheltersCount || 0
+        },
+        // Save the selected route index so we can select the same option when loading
+        selectedRouteIndex: routeData.selectedRouteIndex || 0,
+        createdAt: currentTime,
+        isFavorite: true
+    };
+
+    try {
+        const result = await database.collection('savedRoutes').insertOne(routeDocument);
+        return { status: '200', message: 'Route saved successfully', routeId: result.insertedId };
+    } catch (error) {
+        console.error('Error saving route:', error);
+        return { status: '500', message: 'Error saving route', error: error.message };
+    }
+}
+
+export async function getUserSavedRoutes(userId) {
+    const database = await connectToDb();
+    try {
+        const routes = await database.collection('savedRoutes')
+            .find({ userId: userId })
+            .sort({ createdAt: -1 })
+            .toArray();
+        return { status: '200', routes: routes };
+    } catch (error) {
+        console.error('Error getting saved routes:', error);
+        return { status: '500', message: 'Error getting saved routes', error: error.message };
+    }
+}
+
+export async function getSavedRouteById(routeId, userId) {
+    const database = await connectToDb();
+    const { ObjectId } = require('mongodb');
+
+    try {
+        const route = await database.collection('savedRoutes').findOne({
+            _id: new ObjectId(routeId),
+            userId: userId
+        });
+
+        if (!route) {
+            return { status: '404', message: 'Route not found' };
+        }
+
+        return { status: '200', route: route };
+    } catch (error) {
+        console.error('Error getting route by ID:', error);
+        return { status: '500', message: 'Error getting route', error: error.message };
+    }
+}
+
+export async function deleteSavedRoute(routeId, userId) {
+    const database = await connectToDb();
+    const { ObjectId } = require('mongodb');
+
+    try {
+        const result = await database.collection('savedRoutes').deleteOne({
+            _id: new ObjectId(routeId),
+            userId: userId
+        });
+
+        if (result.deletedCount > 0) {
+            return { status: '200', message: 'Route deleted successfully' };
+        } else {
+            return { status: '404', message: 'Route not found' };
+        }
+    } catch (error) {
+        console.error('Error deleting route:', error);
+        return { status: '500', message: 'Error deleting route', error: error.message };
+    }
+}
