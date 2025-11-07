@@ -102,9 +102,9 @@ const Map: React.FC = () => {
   );
   const [shelterPreference, setShelterPreference] = useState<number>(50); // 0-100 slider value
   const [appliedShelterPreference, setAppliedShelterPreference] = useState<number>(50); // Shelter preference used in last route calculation
-  // keep setters for origin/dest coords used during route calculation
-  const [, setOriginCoords] = useState<LatLngCoordinate | null>(null);
-  const [, setDestCoords] = useState<LatLngCoordinate | null>(null);
+  // keep origin/dest coords used during route calculation
+  const [originCoords, setOriginCoords] = useState<LatLngCoordinate | null>(null);
+  const [destCoords, setDestCoords] = useState<LatLngCoordinate | null>(null);
   const [routeMode, setRouteMode] = useState<google.maps.TravelMode>(
     RouteMode.WALKING
   );
@@ -1500,7 +1500,7 @@ const Map: React.FC = () => {
               directions={directionsResponse}
               routeIndex={selectedRouteIndex}
               options={{
-                suppressMarkers: true, // Suppress default Google Maps markers (origin, destination, waypoints)
+                suppressMarkers: false, // Show default Google Maps markers for origin and destination
               }}
             />
           )}
