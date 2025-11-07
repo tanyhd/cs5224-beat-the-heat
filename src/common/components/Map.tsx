@@ -39,6 +39,7 @@ import Cycling from "../icons/Cycling";
 import Route from "../icons/Route";
 import Clock from "../icons/Clock";
 import MapIcon from "../icons/Map";
+import Notification, { NotificationType, NotificationTypeEnum } from "./Notification";
 
 const containerStyle = {
   width: "100%",
@@ -109,6 +110,10 @@ const Map: React.FC = () => {
   const [temperatureStations, setTemperatureStations] = useState<
     TemperatureStationWithReading[]
   >([]);
+  const [notificationState, setNotificationState] = useState({
+    message: '',
+    type: null as NotificationType,
+  });
 
   const handleToggleChange = () => {
     const toggledMode = routeMode === RouteMode.WALKING
@@ -411,7 +416,10 @@ const Map: React.FC = () => {
 
   const calculateRoute = useCallback(async () => {
     if (!origin || !destination) {
-      alert("Please enter both origin and destination");
+      setNotificationState({
+        message: "Please enter both origin and destination",
+        type: NotificationTypeEnum.WARNING,
+      });
       return;
     }
 
@@ -426,7 +434,10 @@ const Map: React.FC = () => {
       const destCoordinates = await geocodeAddress(destination);
 
       if (!originCoordinates || !destCoordinates) {
-        alert("Could not find coordinates for the provided addresses");
+        setNotificationState({
+          message: "Could not find coordinates for the provided addresses",
+          type: NotificationTypeEnum.ERROR,
+        });
         return;
       }
 
@@ -652,7 +663,10 @@ const Map: React.FC = () => {
       }
     } catch (error) {
       console.error("Error calculating route:", error);
-      alert("Error calculating route. Please check your addresses.");
+      setNotificationState({
+        message: "Error calculating route. Please check your addresses.",
+        type: NotificationTypeEnum.ERROR,
+      });
     }
   }, [
     origin,
@@ -714,6 +728,11 @@ const Map: React.FC = () => {
 
   return isLoaded ? (
     <div>
+      <Notification
+        message={notificationState.message}
+        type={notificationState.type}
+        onClose={() => setNotificationState({ message: '', type: null })}
+      />
       {/* Route Controls */}
       <div
         style={{
