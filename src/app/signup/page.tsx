@@ -81,7 +81,7 @@ export default function SignupPage() {
             type={notificationState.type}
             onClose={() => { setNotificationState({ message: '', type: null }) }}
          />
-         <Header headerText="Create Your Account" captionText="Track your card expenses and discover new offers" />
+         <Header headerText="Create Your Account" captionText="Track your card expenses and discover new offers" captionTextClassName={styles.captionText} headerClassName={styles.header}/>
          <form onSubmit={handleSubmit} className={styles.form}>
             <InputLabel
                labelProps={{ text: 'Email' }}

@@ -59,7 +59,7 @@ export default function LoginPage() {
             type={notificationState.type}
             onClose={() => { setNotificationState({ message: '', type: null }) }}
          />
-         <Header headerText="Welcome Back" captionText="Sign in to access your card management dashboard" />
+         <Header headerText="Welcome Back" captionText="Sign in to access your card management dashboard" captionTextClassName={styles.captionText}/>
          <form onSubmit={handleSubmit} className={styles.form}>
             <InputLabel
                labelProps={{ text: 'Email' }}

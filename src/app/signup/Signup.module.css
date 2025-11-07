@@ -93,6 +93,16 @@
       gap: 8px;
    }
 
+   .header {
+      width: 80%;
+      text-align: center;
+   }
+
+   .captionText {
+      width: 80%;
+      text-align: center;
+   }
+
    .link {
       margin-left: 0;
    }

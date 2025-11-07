@@ -36,6 +36,10 @@
    .form {
       width: 50%;
    }
+   .captionText {
+      width: 80%;
+      text-align: center;
+   }
 }
 
 @media (max-width: 768px) {
