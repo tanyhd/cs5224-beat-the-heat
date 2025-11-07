@@ -42,13 +42,6 @@ import MapIcon from "../icons/Map";
 import Notification, { NotificationType, NotificationTypeEnum } from "./Notification";
 import Modal from "./Modal";
 
-const containerStyle = {
-  width: "100%",
-  height: "400px",
-  borderRadius: "6px",
-  marginTop: "16px"
-};
-
 const center = {
   lat: 1.3521, // Singapore
   lng: 103.8198,
@@ -1156,15 +1149,8 @@ const Map: React.FC = () => {
         onClose={() => setNotificationState({ message: '', type: null })}
       />
       {/* Route Controls */}
-      <div
-        style={{
-          marginBottom: "16px",
-          borderRadius: "16px",
-          padding: "16px",
-          background: "#F5FFFE",
-        }}
-      >
-        <div style={{ color: "#064E3B", fontWeight: "bold", marginBottom: "10px" }}>Plan your route</div>
+      <div className={styles.routeControlsContainer}>
+        <div className={styles.routeControlsTitle}>Plan your route</div>
         {sessionStorage.getItem('userToken') && savedRoutes.length > 0 && (
           <div className={styles.savedRoutesContainer}>
             <div className={styles.savedRoutesTitle}>
@@ -1218,18 +1204,11 @@ const Map: React.FC = () => {
             </div>
           </div>
         )}
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }} className={styles.inputContainer}>
-          <div style={{ display: "flex", gap: "10px", marginTop: "10px", marginBottom: "10px" }} className={styles.inputGroup}>
-            <div style={{ display: "flex", gap: "10px", flex: 1}} className={styles.innerInputGroup}>
-              <div style={{ position: "relative", flex: 1 }}>
-                <div style={{ 
-                  position: "absolute", 
-                  left: "12px", 
-                  top: "62%", 
-                  transform: "translateY(-50%)", 
-                  zIndex: 1,
-                  color: "#064E3B"
-                }}>
+        <div className={styles.inputContainer}>
+          <div className={styles.inputGroup}>
+            <div className={styles.innerInputGroup}>
+              <div className={styles.inputWrapper}>
+                <div className={styles.iconPin}>
                   <Pin />
                 </div>
                 <Autocomplete
@@ -1251,48 +1230,20 @@ const Map: React.FC = () => {
                   placeholder="Origin"
                   value={origin}
                   onChange={(e) => setOrigin(e.target.value)}
-                  style={{
-                    backgroundColor: "#FFF",
-                    color: "black",
-                    padding: "5px 5px 5px 35px",
-                    flex: 1,
-                    borderRadius: "48px",
-                    border: "3px solid #D1EEF8",
-                    width: "100%"
-                  }}
+                  className={styles.inputOrigin}
                   />
                 </Autocomplete>
               </div>
 
-              <div 
+              <div
                 onClick={swapLocations}
-                style={{ 
-                  cursor: "pointer", 
-                  color: "#064E3B", 
-                  fontWeight: "bold",
-                  backgroundColor: "#F3F9FB",
-                  borderRadius: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "32px",
-                  height: "32px",
-                  padding: "4px",
-                  margin: 'auto'
-                }}
+                className={styles.swapButton}
               >
                 <Swap />
               </div>
 
-              <div style={{ position: "relative", flex: 1 }}>
-                <div style={{ 
-                  position: "absolute", 
-                  left: "12px", 
-                  top: "60%", 
-                  transform: "translateY(-50%)", 
-                  zIndex: 1,
-                  color: "#064E3B"
-                }}>
+              <div className={styles.inputWrapper}>
+                <div className={styles.iconFlag}>
                   <Flag />
                 </div>
                 <Autocomplete
@@ -1314,15 +1265,7 @@ const Map: React.FC = () => {
                     placeholder="Destination"
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
-                    style={{
-                      backgroundColor: "#FFF",
-                      color: "black",
-                      padding: "5px 5px 5px 35px",
-                      flex: 1,
-                      borderRadius: "48px",
-                      border: "3px solid #D1EEF8",
-                      width: "100%"
-                    }}
+                    className={styles.inputDestination}
                   />
                 </Autocomplete>
               </div>
@@ -1347,56 +1290,16 @@ const Map: React.FC = () => {
           value={shelterPreference}
           onChange={setShelterPreference}
         />
-        <div style={{ display: "flex", gap: "10px"}}>
+        <div className={styles.buttonsFlexContainer}>
             <button
             onClick={calculateRouteWithLogging}
-            style={{
-              backgroundColor: "#06B6D4",
-              color: "white",
-              borderRadius: "16px",
-              padding: "8px 16px",
-              width: "80%",
-              border: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#0891B2";
-              e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.3)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#06B6D4";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
+            className={styles.findCoolerRouteButton}
             >
             Find Cooler Route
             </button>
             <button
             onClick={clearRouteWithLogging}
-            style={{
-              backgroundColor: "#EFFCFB",
-              color: "#064E3B",
-              padding: "8px 16px",
-              width: "20%",
-              borderRadius: "16px",
-              border: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#D1F2EA";
-              e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 78, 59, 0.15)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#EFFCFB";
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
+            className={styles.clearRouteButton}
             >
             Clear
             </button>
@@ -1404,30 +1307,10 @@ const Map: React.FC = () => {
 
         {/* Save Route Button - only show when route is calculated and user is logged in */}
         {directionsResponse && sessionStorage.getItem('userToken') && (
-          <div style={{ marginTop: "10px" }}>
+          <div className={styles.saveRouteButtonWrapper}>
             <button
               onClick={() => setShowSaveModal(true)}
-              style={{
-                backgroundColor: "#FFF",
-                color: "#06B6D4",
-                padding: "8px 16px",
-                width: "100%",
-                borderRadius: "16px",
-                border: "2px solid #06B6D4",
-                fontWeight: "bold",
-                cursor: "pointer",
-                transition: "all 0.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = "#F0FDFF";
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = "#FFF";
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
+              className={styles.saveThisRouteButton}
             >
               Save This Route
             </button>
@@ -1438,11 +1321,11 @@ const Map: React.FC = () => {
 
       {/* Save Route Modal */}
       <Modal isOpen={showSaveModal}>
-        <div style={{ padding: "20px", maxWidth: "500px" }}>
-          <h2 style={{ color: "#064E3B", marginBottom: "20px" }}>💾 Save Route</h2>
+        <div className={styles.modalContainer}>
+          <h2 className={styles.modalTitle}>💾 Save Route</h2>
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={{ display: "block", marginBottom: "8px", color: "#064E3B", fontWeight: "bold" }}>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>
               Route Name *
             </label>
             <input
@@ -1450,24 +1333,11 @@ const Map: React.FC = () => {
               value={routeName}
               onChange={(e) => setRouteName(e.target.value)}
               placeholder="e.g., Morning Commute to Office"
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "2px solid #D1EEF8",
-                fontSize: "14px",
-              }}
+              className={styles.formInput}
             />
           </div>
 
-          <div style={{
-            padding: "12px",
-            backgroundColor: "#F5FFFE",
-            borderRadius: "8px",
-            marginBottom: "20px",
-            fontSize: "14px",
-            color: "#064E3B"
-          }}>
+          <div className={styles.routeSummaryBox}>
             <div><strong>From:</strong> {origin}</div>
             <div><strong>To:</strong> {destination}</div>
             <div><strong>Mode:</strong> {routeMode === RouteMode.WALKING ? "🚶 Walking" : "🚴 Bicycling"}</div>
@@ -1475,37 +1345,19 @@ const Map: React.FC = () => {
             <div><strong>Distance:</strong> {distance} | <strong>Duration:</strong> {duration}</div>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div className={styles.modalButtonGroup}>
             <button
               onClick={() => {
                 setShowSaveModal(false);
                 setRouteName("");
               }}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "16px",
-                border: "none",
-                backgroundColor: "#EFFCFB",
-                color: "#064E3B",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
+              className={styles.modalCancelButton}
             >
               Cancel
             </button>
             <button
               onClick={handleSaveRoute}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "16px",
-                border: "none",
-                backgroundColor: "#06B6D4",
-                color: "white",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
+              className={styles.modalPrimaryButton}
             >
               Save Route
             </button>
@@ -1515,42 +1367,24 @@ const Map: React.FC = () => {
 
       {/* Delete Route Confirmation Modal */}
       <Modal isOpen={showDeleteModal}>
-        <div style={{ padding: "20px", maxWidth: "400px" }}>
-          <h2 style={{ color: "#064E3B", marginBottom: "16px" }}>🗑️ Delete Route</h2>
-          <p style={{ color: "#064E3B", marginBottom: "24px", fontSize: "14px" }}>
+        <div className={styles.modalContainerSmall}>
+          <h2 className={styles.modalTitleSmall}>🗑️ Delete Route</h2>
+          <p className={styles.modalTextLarge}>
             Are you sure you want to delete this saved route? This action cannot be undone.
           </p>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div className={styles.modalButtonGroup}>
             <button
               onClick={() => {
                 setShowDeleteModal(false);
                 setRouteToDelete(null);
               }}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "16px",
-                border: "none",
-                backgroundColor: "#EFFCFB",
-                color: "#064E3B",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
+              className={styles.modalCancelButton}
             >
               Cancel
             </button>
             <button
               onClick={confirmDeleteRoute}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "16px",
-                border: "none",
-                backgroundColor: "#EF4444",
-                color: "white",
-                fontWeight: "bold",
-                cursor: "pointer",
-              }}
+              className={styles.modalDeleteButton}
             >
               Delete
             </button>
@@ -1601,16 +1435,10 @@ const Map: React.FC = () => {
       </Modal>
 
       {/* Map */}
-      <div style={{
-        borderRadius: "16px",
-        border: "3px solid #D1EEF8",
-        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-        padding: "16px",
-        background: "#FFFFFF",
-      }} >
+      <div className={styles.mapOuterContainer}>
         {routeOptions.length > 0 && (
-          <div style={{ marginBottom: "10px" }}>
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <div className={styles.routeOptionsContainer}>
+            <div className={styles.routeOptionsButtonsContainer}>
               {routeOptions
                 .slice(
                   0,
@@ -1622,35 +1450,7 @@ const Map: React.FC = () => {
                     <button
                       key={index}
                       onClick={() => selectRoute(index)}
-                      style={{
-                      padding: "8px 12px",
-                      backgroundColor:
-                        selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB",
-                      color: selectedRouteIndex === index ? "#FFF" : "#064E3B",
-                      fontWeight: "bold",
-                      border: "1px solid #ddd",
-                      borderRadius: "48px",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                      transition: "all 0.2s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                      if (selectedRouteIndex !== index) {
-                        e.currentTarget.style.backgroundColor = "#D1F2EA";
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 78, 59, 0.15)";
-                      } else {
-                        e.currentTarget.style.backgroundColor = "#0891B2";
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(6, 182, 212, 0.3)";
-                      }
-                      }}
-                      onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        selectedRouteIndex === index ? "#06B6D4" : "#EFFCFB";
-                      e.currentTarget.style.transform = "translateY(0)";
-                      e.currentTarget.style.boxShadow = "none";
-                      }}
+                      className={`${styles.routeOptionButton} ${selectedRouteIndex === index ? styles.selected : ''}`}
                     >
                       <Route style={{position: "relative", top:"3px"}} stroke={selectedRouteIndex === index ? "#FFF" : "#064E3B"} />
                       Option {index + 1}: {details.duration} | {details.distance}
@@ -1661,7 +1461,7 @@ const Map: React.FC = () => {
           </div>
         )}
         <GoogleMap
-          mapContainerStyle={containerStyle}
+          mapContainerClassName={styles.mapContainerStyle}
           center={center}
           zoom={11}
         >
@@ -1713,21 +1513,13 @@ const Map: React.FC = () => {
         </GoogleMap>
       </div>
 
-      {duration && distance && <div style={{
-        borderRadius: "16px",
-        border: "3px solid #D1EEF8",
-        boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-        padding: "16px",
-        background: "#FFFFFF",
-        marginTop: "16px",
-        marginBottom: "32px",
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-          <div style={{ fontWeight: "bold", fontSize: "16px" }}>Coolest Path</div>
+      {duration && distance && <div className={styles.coolestPathContainer}>
+        <div className={styles.coolestPathHeader}>
+          <div className={styles.coolestPathTitle}>Coolest Path</div>
           <div><Pill label={routeMode}/></div>
         </div>
-        <div style={{ color: "#7AA9C3", display: "flex", alignItems: "center", gap: "4px" }}><Clock stroke="#7AA9C3" />{duration}   <MapIcon />{distance}</div>
-        <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className={styles.coolestPathStats}><Clock stroke="#7AA9C3" />{duration}   <MapIcon />{distance}</div>
+        <div className={styles.coolestPathPills}>
           <Pill label={`+ Tree lined streets`} />
           <Pill label={`+ ${filteredLinkways?.length} Sheltered Linkways`} />
           {routeOptions[selectedRouteIndex] && (() => {
