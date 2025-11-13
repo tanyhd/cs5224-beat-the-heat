@@ -181,41 +181,45 @@ export default function ChallengeAddForm() {
   };
 
   // Delete challenge
-  const handleDelete = async (challengeId: string) => {
-    try {
-      const userToken = sessionStorage.getItem('userToken');
-      if (!userToken) return;
+// inside ChallengeAddForm
+const handleDelete = async (challengeId: string) => {
+  try {
+    const userToken = sessionStorage.getItem('userToken');
+    if (!userToken) return;
 
-      const res = await fetch(`/api/challenge/delete/${challengeId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${userToken}`,
-        },
+    const res = await fetch("/api/challenge/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${userToken}`,
+      },
+      body: JSON.stringify({ challengeId }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      setNotificationState({
+        message: data.message || "Challenge deleted successfully",
+        type: NotificationTypeEnum.SUCCESS,
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setNotificationState({
-          message: data.message || 'Challenge deleted successfully',
-          type: NotificationTypeEnum.SUCCESS,
-        });
-
-        setUserChallenges(prev => prev.filter(c => c.challengeId !== challengeId));
-      } else {
-        setNotificationState({
-          message: data.message || 'Error deleting challenge',
-          type: NotificationTypeEnum.ERROR,
-        });
-      }
-    } catch (err) {
-      console.error('🔥 Error deleting challenge:', err);
+      setUserChallenges(prev => prev.filter(c => c.challengeId !== challengeId));
+    } else {
       setNotificationState({
-        message: 'Error deleting challenge',
+        message: data.message || "Error deleting challenge",
         type: NotificationTypeEnum.ERROR,
       });
     }
-  };
+  } catch (err) {
+    console.error("🔥 Error deleting challenge:", err);
+    setNotificationState({
+      message: "Error deleting challenge",
+      type: NotificationTypeEnum.ERROR,
+    });
+  }
+};
+
 
   return (
     <div className={styles.formContainer}>
