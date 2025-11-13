@@ -45,6 +45,12 @@ export async function findAllScrapedData() {
 
 export async function findUserByEmail(email) {
     const database = await connectToDb();
+        // Fetch all users as an array
+    const users = await database.collection('userInfo').find({}).toArray();
+    
+    console.log('Users in database:');
+    console.log(users);  // prints array of user objects
+    
     return await database.collection('userInfo').findOne({ email });
 }
 
@@ -543,3 +549,59 @@ export async function getSharedRoute(shareId) {
         return { status: '500', message: 'Error getting shared route', error: error.message };
     }
 }
+
+// Add a challenge for a user
+async function addUserChallenge(userChallenge) {
+  const database = await connectToDb();
+
+  // Optional: prevent duplicates
+  const existing = await database.collection('userChallenges').findOne({
+    userId: userChallenge.userId,
+    challengeId: userChallenge.challengeId
+  });
+
+  console.log('Existing challenge check:', existing);
+
+  if (existing) {
+    return { status: '409', message: 'Challenge already added' };
+  }
+
+  const doc = {
+    ...userChallenge,
+    createdAt: getCurrentTime()  // reuse your existing function
+  };
+
+  const result = await database.collection('userChallenges').insertOne(doc);
+  return { status: '200', message: 'Challenge added', insertedId: result.insertedId };
+}
+
+// Get all challenges added by a user
+async function getUserChallenges(userId) {
+  const database = await connectToDb();
+  const challenges = await database.collection('userChallenges')
+    .find({ userId: userId })
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  return challenges;
+}
+
+// Delete a challenge from a user's profile
+async function deleteUserChallenge(userId, challengeId) {
+  const database = await connectToDb();
+  const result = await database.collection('userChallenges')
+    .deleteOne({ userId: userId, challengeId: challengeId });
+
+  if (result.deletedCount > 0) {
+    return { status: '200', message: 'Challenge removed' };
+  } else {
+    return { status: '404', message: 'Challenge not found' };
+  }
+}
+
+// Export these functions using ES module syntax
+export { addUserChallenge, getUserChallenges, deleteUserChallenge };
+
+
+
+

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { checkUserToken, editCreditCard } from '../../../../../services/mongodb'
+import { checkUserToken, editCreditCard } from '@/services/mongodb';
 
 export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
    const authHeader = req.headers.get('authorization');

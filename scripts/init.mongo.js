@@ -10,7 +10,8 @@
 db.userInfo.remove({});
 db.scrapedData.remove({});
 
-db.userInfo.insert({
+db.userInfo.insertMany([
+  {
     "userId": 1,
     "email": "testing123@gmail.com",
     "name": "tester1",
@@ -18,7 +19,18 @@ db.userInfo.insert({
     "token": "6803aee3f4007b2b1cc3e6af",
     "tokenTime": NumberLong("1745071843"),
     "createdAt": NumberLong("1745071843")
-});
+  },
+  {
+    "userId": 2,
+    "email": "testing@gmail.com",
+    "name": "tester1",
+    "password": "12345",
+    "token": "6803aee3f4007b2b1cc3e6ag",
+    "tokenTime": NumberLong("1745071843"),
+    "createdAt": NumberLong("1745071843")
+  }
+]);
+
 
 const count = db.userInfo.count();
 print('Inserted', count, 'user');

@@ -6,7 +6,7 @@ import styles from "./CardsPage.module.css";
 
 const CARDMANAGEMENT_BREADCRUMBS = [
   { name: "Home", href: "/" },
-  { name: "Card Management", href: "/cards" },
+  { name: "Challenge Management", href: "/cards" },
 ]
 
 export default function CardsPage() {
@@ -14,7 +14,7 @@ export default function CardsPage() {
   return (
     <>
       <Breadcrumb links={CARDMANAGEMENT_BREADCRUMBS} />
-      <Header headerText="Your Cards" captionText="" containerClassName={styles.headerContainer} />
+      <Header headerText="Your Challenges" captionText="" containerClassName={styles.headerContainer} />
       <UserCards />
     </>
   );

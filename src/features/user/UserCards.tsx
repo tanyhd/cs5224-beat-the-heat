@@ -174,7 +174,7 @@ export default function UserCards() {
             />
             <div>
                 <div className={styles.cardsContainer}>
-                    {cards.map((card) => {
+                    {/*cards.map((card) => {
                         const maskedCardNumber = `XXXX-XXXX-XXXX-${card.cardNumber.slice(-4)}`;
                         const details = {
                             topSubLabel: maskedCardNumber,
@@ -200,7 +200,7 @@ export default function UserCards() {
                                 cardClassName={styles.card}
                             />
                         );
-                    })}
+                    })*/}
                 </div>
             </div>
             <div ref={formRef} className={styles.formContainer}>
