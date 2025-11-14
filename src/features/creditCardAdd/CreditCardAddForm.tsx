@@ -182,43 +182,43 @@ export default function ChallengeAddForm() {
 
   // Delete challenge
 // inside ChallengeAddForm
-const handleDelete = async (challengeId: string) => {
-  try {
-    const userToken = sessionStorage.getItem('userToken');
-    if (!userToken) return;
+   const handleDelete = async (challengeId: string) => {
+   try {
+      const userToken = sessionStorage.getItem('userToken');
+      if (!userToken) return;
 
-    const res = await fetch("/api/challenge/delete", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${userToken}`,
-      },
-      body: JSON.stringify({ challengeId }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      setNotificationState({
-        message: data.message || "Challenge deleted successfully",
-        type: NotificationTypeEnum.SUCCESS,
+      const res = await fetch("/api/challenge/delete", {
+         method: "DELETE",
+         headers: {
+         "Content-Type": "application/json",
+         "Authorization": `Bearer ${userToken}`,
+         },
+         body: JSON.stringify({ challengeId }),
       });
 
-      setUserChallenges(prev => prev.filter(c => c.challengeId !== challengeId));
-    } else {
+      const data = await res.json();
+
+      if (res.ok) {
+         setNotificationState({
+         message: data.message || "Challenge deleted successfully",
+         type: NotificationTypeEnum.SUCCESS,
+         });
+
+         setUserChallenges(prev => prev.filter(c => c.challengeId !== challengeId));
+      } else {
+         setNotificationState({
+         message: data.message || "Error deleting challenge",
+         type: NotificationTypeEnum.ERROR,
+         });
+      }
+   } catch (err) {
+      console.error("🔥 Error deleting challenge:", err);
       setNotificationState({
-        message: data.message || "Error deleting challenge",
-        type: NotificationTypeEnum.ERROR,
+         message: "Error deleting challenge",
+         type: NotificationTypeEnum.ERROR,
       });
-    }
-  } catch (err) {
-    console.error("🔥 Error deleting challenge:", err);
-    setNotificationState({
-      message: "Error deleting challenge",
-      type: NotificationTypeEnum.ERROR,
-    });
-  }
-};
+   }
+   };
 
 
   return (
@@ -295,44 +295,50 @@ const handleDelete = async (challengeId: string) => {
         </Button>
       </form>
 
-      {/* User Challenges Table */}
-      <h3 style={{ marginTop: '32px' }}>Your Challenges</h3>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Challenge Name</th>
-            <th>Start Date</th>
-            <th>Tracking</th>
-            <th>Action</th>
+{/* User Challenges Table */}
+<h3 className={styles.sectionHeader}>Your Saved Challenges</h3>
+<div className={styles.tableWrapper}>
+  <table className={styles.niceTable}>
+    <thead>
+      <tr>
+        <th>Challenge Name</th>
+        <th>Start Date</th>
+        <th>Tracking</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {userChallenges.length > 0 ? (
+        userChallenges.map(ch => (
+          <tr key={ch.challengeId}>
+            <td>{ch.challengeName}</td>
+            <td>{ch.startDate}</td>
+            <td>
+              <span className={ch.trackAllowed ? styles.yesBadge : styles.noBadge}>
+                {ch.trackAllowed ? 'Yes' : 'No'}
+              </span>
+            </td>
+            <td className={styles.actionCell}>
+            <Button
+               variant="secondary"
+               classNameProps={styles.button}
+               onClick={() => handleDelete(ch.challengeId)}
+            >
+               Delete
+            </Button>
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {userChallenges.length > 0 ? (
-            userChallenges.map(ch => (
-              <tr key={ch.challengeId}>
-                <td>{ch.challengeName}</td>
-                <td>{ch.startDate}</td>
-                <td>{ch.trackAllowed ? 'Yes' : 'No'}</td>
-                <td>
-                  <Button
-                    variant="secondary"
-                    classNameProps={styles.button}
-                    onClick={() => handleDelete(ch.challengeId)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={4} style={{ textAlign: 'center', padding: '10px' }}>
-                No challenges added yet.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+        ))
+      ) : (
+        <tr>
+          <td colSpan={4} className={styles.emptyRow}>
+            No challenges added yet.
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
+</div>
   );
 }
