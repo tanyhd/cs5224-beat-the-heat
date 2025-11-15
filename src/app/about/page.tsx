@@ -98,6 +98,37 @@ export default function About() {
         </section>
 
         <section className={styles.section}>
+          <h2>Help Us Improve</h2>
+          <p>
+            Your feedback is invaluable in making Beat the Heat better for everyone. We're constantly working
+            to improve the app and would love to hear about your experience using our features.
+          </p>
+          <p>
+            <strong>Share your thoughts in our quick survey!</strong> It takes just 3-5 minutes and helps us
+            understand what's working well and what we can improve. Whether you've tried the Breeze Navigator,
+            joined challenges, or explored sponsorship rewards, we want to hear from you.
+          </p>
+          <p>
+            <a
+              href="https://surveymars.com/q/iAnss9Cf0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.link}
+              style={{
+                fontSize: '1.1em',
+                fontWeight: 'bold',
+                textDecoration: 'underline'
+              }}
+            >
+              Take the User Survey →
+            </a>
+          </p>
+          <p style={{ fontSize: '0.95em', color: '#666' }}>
+            <em>Your responses help us create a more comfortable walking and cycling experience for all Singaporeans.</em>
+          </p>
+        </section>
+
+        <section className={styles.section}>
           <h2>Get Started</h2>
           <p>
             Ready to beat the heat? <a href="/signup" className={styles.link}>Create an account</a> to
