@@ -19,6 +19,11 @@ interface KMEntry {
   challengeId?: string;
 }
 
+// Spinner component
+const Spinner = () => (
+  <div className={styles.spinner}></div>
+);
+
 export default function ChallengeTracker() {
   const [userChallenges, setUserChallenges] = useState<UserChallenge[]>([]);
   const [kmEntries, setKmEntries] = useState<KMEntry[]>([]);
@@ -33,6 +38,11 @@ export default function ChallengeTracker() {
     km: '',
     challengeId: '',
   });
+
+  // Loading states
+  const [loadingStats, setLoadingStats] = useState<boolean>(true);
+  const [loadingChallenges, setLoadingChallenges] = useState<boolean>(true);
+  const [loadingKMEntries, setLoadingKMEntries] = useState<boolean>(true);
 
   // --- Fetch user challenges ---
   useEffect(() => {
@@ -49,6 +59,9 @@ export default function ChallengeTracker() {
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoadingChallenges(false);
+        setLoadingStats(false);
       }
     };
     fetchUserChallenges();
@@ -67,13 +80,14 @@ export default function ChallengeTracker() {
           const data = await res.json();
           const mappedEntries = (data.progress || []).map((entry: any) => ({
             ...entry,
-            type: entry.activity, // map the API's 'activity' to 'type'
+            type: entry.activity,
           }));
           setKmEntries(mappedEntries);
         }
-
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoadingKMEntries(false);
       }
     };
     fetchKMEntries();
@@ -95,7 +109,7 @@ export default function ChallengeTracker() {
     if (isNaN(kmValue)) return;
 
     const payload = {
-      challengeId: formData.challengeId || '', 
+      challengeId: formData.challengeId || '',
       date: formData.date,
       activity: formData.type,
       km: kmValue,
@@ -130,7 +144,6 @@ export default function ChallengeTracker() {
   // --- Delete KM Entry ---
   const handleDeleteKM = async (entryId?: string) => {
     if (!entryId) return;
-
     const userToken = sessionStorage.getItem('userToken');
     if (!userToken) return;
 
@@ -145,18 +158,12 @@ export default function ChallengeTracker() {
       });
 
       const data = await res.json();
-
-      if (res.ok) {
-        // Remove the deleted entry from state
-        setKmEntries(prev => prev.filter(e => e._id !== entryId));
-      } else {
-        console.error('Error deleting KM entry:', data.message);
-      }
+      if (res.ok) setKmEntries(prev => prev.filter(e => e._id !== entryId));
+      else console.error('Error deleting KM entry:', data.message);
     } catch (err) {
       console.error('Error deleting KM entry:', err);
     }
   };
-
 
   // --- Complete Challenge ---
   const handleCompleteChallenge = async (challengeId: string) => {
@@ -188,19 +195,19 @@ export default function ChallengeTracker() {
       {/* Stats Boxes */}
       <div className={styles.statsGrid}>
         <div className={styles.statBox}>
-          <h3>{inProgressCount}</h3>
+          <h3>{loadingStats ? <Spinner /> : inProgressCount}</h3>
           <p>Challenges In Progress</p>
         </div>
         <div className={styles.statBox}>
-          <h3>{completedCount}</h3>
+          <h3>{loadingStats ? <Spinner /> : completedCount}</h3>
           <p>Challenges Completed</p>
         </div>
         <div className={styles.statBox}>
-          <h3>{kmWalked} km</h3>
+          <h3>{loadingStats ? <Spinner /> : `${kmWalked} km`}</h3>
           <p>KM Walked</p>
         </div>
         <div className={styles.statBox}>
-          <h3>{kmCycled} km</h3>
+          <h3>{loadingStats ? <Spinner /> : `${kmCycled} km`}</h3>
           <p>KM Cycled</p>
         </div>
       </div>
@@ -219,7 +226,6 @@ export default function ChallengeTracker() {
               required
             />
           </div>
-
           <div className={styles.inputGroup}>
             <label>Type</label>
             <select
@@ -233,7 +239,6 @@ export default function ChallengeTracker() {
               <option value="Cycle">Cycle</option>
             </select>
           </div>
-
           <div className={styles.inputGroup}>
             <label>KM</label>
             <input
@@ -246,7 +251,6 @@ export default function ChallengeTracker() {
               step={0.1}
             />
           </div>
-
           <div className={styles.inputGroup}>
             <label>Challenge (optional)</label>
             <select
@@ -255,14 +259,15 @@ export default function ChallengeTracker() {
               onChange={e => setFormData(prev => ({ ...prev, challengeId: e.target.value }))}
             >
               <option value="">None</option>
-              {userChallenges.map(c => (
-                <option key={c.challengeId} value={c.challengeId}>
-                  {c.challengeName}
-                </option>
-              ))}
+              {userChallenges
+                .filter(c => c.status === 'In Progress')
+                .map(c => (
+                  <option key={c.challengeId} value={c.challengeId}>
+                    {c.challengeName}
+                  </option>
+                ))}
             </select>
           </div>
-
           <div className={styles.inputGroupButton}>
             <button type="submit" className={styles.addButton}>
               Add
@@ -285,7 +290,13 @@ export default function ChallengeTracker() {
             </tr>
           </thead>
           <tbody>
-            {kmEntries.length ? (
+            {loadingKMEntries ? (
+              <tr>
+                <td colSpan={5} style={{ textAlign: 'center' }}>
+                  <Spinner />
+                </td>
+              </tr>
+            ) : kmEntries.length ? (
               kmEntries.map((entry, idx) => (
                 <tr key={idx}>
                   <td>{entry.date}</td>
@@ -329,7 +340,13 @@ export default function ChallengeTracker() {
             </tr>
           </thead>
           <tbody>
-            {userChallenges.length ? (
+            {loadingChallenges ? (
+              <tr>
+                <td colSpan={5} style={{ textAlign: 'center' }}>
+                  <Spinner />
+                </td>
+              </tr>
+            ) : userChallenges.length ? (
               userChallenges.map(ch => (
                 <tr key={ch.challengeId}>
                   <td>{ch.challengeName}</td>

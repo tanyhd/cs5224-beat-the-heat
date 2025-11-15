@@ -47,3 +47,18 @@
     margin-bottom: 16px;
     color: #7AA9C3;
 }
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #06B6D4; /* cyan color */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

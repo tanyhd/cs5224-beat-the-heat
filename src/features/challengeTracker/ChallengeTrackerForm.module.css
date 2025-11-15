@@ -113,7 +113,8 @@
 
 .niceTable th, .niceTable td {
   padding: 12px 16px;
-  border-bottom: 1px solid #c7c5c5;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f9f9f9;
   text-align: left;
 }
 
@@ -186,3 +187,116 @@
 .completeButton:hover {
   background-color: #0e7490;
 }
+
+/* ========================================= */
+/* MOBILE RESPONSIVE LAYOUT (Max width 1068px) */
+/* ========================================= */
+@media (max-width: 1068px) {
+
+  .dashboardContainer {
+    padding: 16px;
+  }
+
+  .header {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  /* --- Stats Box Responsive --- */
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr); /* 4 → 2 */
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .statsGrid {
+      grid-template-columns: 1fr; /* Small phones: stack */
+    }
+  }
+
+  .statBox {
+    padding: 16px;
+  }
+
+  .statBox h3 {
+    font-size: 24px;
+  }
+
+  /* --- KM Form Responsive --- */
+  .kmFormGrid {
+    grid-template-columns: 1fr; /* Stack inputs */
+  }
+
+  .inputGroup,
+  .inputGroupButton {
+    width: 100%;
+  }
+
+  .addButton {
+    width: 100%; /* Full width button on mobile */
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* --- Table Responsive --- */
+  .tableWrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .niceTable th,
+  .niceTable td {
+    padding: 10px;
+    font-size: 14px;
+    white-space: nowrap; /* Prevent broken rows */
+  }
+
+  /* Make Delete & Complete buttons more touch-friendly */
+  .deleteButton,
+  .completeButton {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+
+  /* Section headers */
+  .sectionHeader {
+    font-size: 18px;
+    margin-top: 24px;
+  }
+}
+
+/* Optional: super small screens (max 480px) */
+@media (max-width: 480px) {
+  .header {
+    font-size: 20px;
+  }
+
+  .statBox p {
+    font-size: 12px;
+  }
+
+  .inputField {
+    font-size: 14px;
+  }
+
+  .niceTable th,
+  .niceTable td {
+    font-size: 12px;
+  }
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid #06B6D4; /* cyan accent */
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

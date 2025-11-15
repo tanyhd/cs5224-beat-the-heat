@@ -12,16 +12,24 @@ interface SponsorshipFilterProps {
 interface SubPillsProps {
     label: string;
     value: string | number;
+    loading: boolean;
 }
 
 const TYPES: Type[] = ['gear', 'apparel', 'food'];
 const STATUSES: Status[] = ['locked', 'available', 'redeemed'];
 
-const SubPills = ({ label, value }: SubPillsProps) => {
+// SubPills with spinner support
+const SubPills = ({ label, value, loading }: SubPillsProps) => {
   return (
     <div className={styles.pill}>
       <span>{label}</span>
-      <span className={styles.header}>{value}</span>
+      <span className={styles.header}>
+        {loading ? (
+          <div className={styles.spinner}></div>
+        ) : (
+          value
+        )}
+      </span>
     </div>
   );
 };
@@ -31,11 +39,12 @@ const SponsorshipFilter = ({ sponsors, setFilteredSponsors }: SponsorshipFilterP
     const [categoryFilterValue, setCategoryFilterValue] = useState<string>("All");
     const [sortValue, setSortValue] = useState<string>("Recommended");
 
-    // --- Live stats from Challenge Tracker ---
+    // --- Live stats ---
     const [completedCount, setCompletedCount] = useState<number>(0);
     const [inProgressCount, setInProgressCount] = useState<number>(0);
     const [kmWalked, setKmWalked] = useState<number>(0);
     const [kmCycled, setKmCycled] = useState<number>(0);
+    const [loadingStats, setLoadingStats] = useState<boolean>(true);
 
     useEffect(() => {
       const fetchStats = async () => {
@@ -55,6 +64,8 @@ const SponsorshipFilter = ({ sponsors, setFilteredSponsors }: SponsorshipFilterP
           setKmCycled(data.kmCycled ?? 0);
         } catch (err) {
           console.error('Error fetching challenge stats:', err);
+        } finally {
+          setLoadingStats(false);
         }
       };
       fetchStats();
@@ -87,48 +98,48 @@ const SponsorshipFilter = ({ sponsors, setFilteredSponsors }: SponsorshipFilterP
         setSortValue(sortValue);
     };
 
-  return (
-    <div className={styles.sponsorshipFilterContainer}>
-      <div className={styles.header}>Filters</div>
-      <Dropdown
-        name="Status"
-        label="Status"
-        options={["All", ...STATUSES]}
-        value={statusFilterValue}
-        onChange={(e) => handleFilterChange("Status", e.target.value)}
-        className={styles.container}
-      />
-      <Dropdown
-        name="Category"
-        label="Category"
-        options={["All", ...TYPES]}
-        value={categoryFilterValue}
-        onChange={(e) => handleFilterChange("Category", e.target.value)}
-        className={styles.container}
-      />
-      <Dropdown
-        name="Sort"
-        label="Sort"
-        options={["Recommended", "A-Z"]}
-        value={sortValue}
-        onChange={(e) => handleSortChange(e.target.value)}
-        className={styles.container}
-      />
+    return (
+      <div className={styles.sponsorshipFilterContainer}>
+        <div className={styles.header}>Filters</div>
+        <Dropdown
+          name="Status"
+          label="Status"
+          options={["All", ...STATUSES]}
+          value={statusFilterValue}
+          onChange={(e) => handleFilterChange("Status", e.target.value)}
+          className={styles.container}
+        />
+        <Dropdown
+          name="Category"
+          label="Category"
+          options={["All", ...TYPES]}
+          value={categoryFilterValue}
+          onChange={(e) => handleFilterChange("Category", e.target.value)}
+          className={styles.container}
+        />
+        <Dropdown
+          name="Sort"
+          label="Sort"
+          options={["Recommended", "A-Z"]}
+          value={sortValue}
+          onChange={(e) => handleSortChange(e.target.value)}
+          className={styles.container}
+        />
 
-      <div className={cx(styles.container, styles.progressBox)}>
-        <div className={styles.header}>Your progress</div>
-        <div className={styles.caption}>
-            Earn rewards by completing challenges and clocking miles.
-        </div>
-        <div className={styles.pillsContainer}>
-            <SubPills label="Challenges completed" value={completedCount} />
-            <SubPills label="Challenges in progress" value={inProgressCount} />
-            <SubPills label="Walking clocked" value={`${kmWalked} km`} />
-            <SubPills label="Cycling clocked" value={`${kmCycled} km`} />
+        <div className={cx(styles.container, styles.progressBox)}>
+          <div className={styles.header}>Your progress</div>
+          <div className={styles.caption}>
+              Earn rewards by completing challenges and clocking miles.
+          </div>
+          <div className={styles.pillsContainer}>
+              <SubPills label="Challenges completed" value={completedCount} loading={loadingStats} />
+              <SubPills label="Challenges in progress" value={inProgressCount} loading={loadingStats} />
+              <SubPills label="Walking clocked" value={`${kmWalked} km`} loading={loadingStats} />
+              <SubPills label="Cycling clocked" value={`${kmCycled} km`} loading={loadingStats} />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export default SponsorshipFilter;

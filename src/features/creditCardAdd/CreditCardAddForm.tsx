@@ -166,7 +166,7 @@ export default function ChallengeAddForm() {
         });
 
         // refresh user challenge list
-        setUserChallenges(prev => [...prev, formData]);
+        setUserChallenges(prev => [{ ...formData, status: 'In Progress' }, ...prev]);
       } else {
         setNotificationState({
           message: data.message || 'Error adding challenge',

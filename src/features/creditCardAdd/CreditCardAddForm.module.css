@@ -143,3 +143,97 @@
 .sectionHeader {
   margin-top: 1px; /* adjust to your liking */
 }
+
+/* ---------------------------------------------------- */
+/* RESPONSIVE LAYOUT FOR MANAGE CARDS (Keeps Same Look) */
+/* ---------------------------------------------------- */
+@media (max-width: 1068px) {
+
+  /* Buttons shrink a bit but keep shape */
+  .button.button {
+    max-width: 120px;
+    margin-bottom: 32px;
+  }
+
+  /* Form row: go from row → column on tablets */
+  .formRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Input fields remain full width */
+  .inputLabel,
+  .inputContainer,
+  .input.input {
+    width: 100%;
+  }
+
+  /* Toggle alignment stays nice */
+  .toggleWrapper {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .otpButton.otpButton {
+    width: 100%;
+  }
+
+  .modalContentContainer {
+    max-width: 90%; 
+  }
+
+  /* Table: maintain look but more padding-friendly */
+  .niceTable th,
+  .niceTable td {
+    padding: 10px 12px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .tableWrapper {
+    overflow-x: auto;
+  }
+}
+
+/* ---------------------------------------------------- */
+/* EXTRA SMALL SCREENS (Phones)                         */
+/* ---------------------------------------------------- */
+@media (max-width: 480px) {
+
+  .button.button {
+    max-width: 100%;
+  }
+
+  .formRow {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .headingWithIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .niceTable th,
+  .niceTable td {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  .deleteButton {
+    padding: 6px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .yesBadge,
+  .noBadge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  /* Table scrolls cleanly */
+  .tableWrapper {
+    border-radius: 10px;
+  }
+}
