@@ -39,6 +39,7 @@ export async function POST(req) {
       challengeName,
       startDate,
       trackAllowed,
+      status: "In Progress",
     });
 
     if (result.status === "500") {

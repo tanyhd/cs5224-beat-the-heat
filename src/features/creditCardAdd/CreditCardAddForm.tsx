@@ -24,6 +24,7 @@ export interface Challenge {
   href?: string;
   fee?: string;
   source?: string;
+  status?: string;
 }
 
 // user-added challenge (from userChallenges collection)
@@ -33,6 +34,7 @@ export interface UserChallenge {
   challengeName: string;
   startDate: string;
   trackAllowed: boolean;
+   status?: string;
 }
 
 export default function ChallengeAddForm() {
@@ -299,45 +301,47 @@ export default function ChallengeAddForm() {
 <h3 className={styles.sectionHeader}>Your Saved Challenges</h3>
 <div className={styles.tableWrapper}>
   <table className={styles.niceTable}>
-    <thead>
-      <tr>
-        <th>Challenge Name</th>
-        <th>Start Date</th>
-        <th>Tracking</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {userChallenges.length > 0 ? (
-        userChallenges.map(ch => (
-          <tr key={ch.challengeId}>
-            <td>{ch.challengeName}</td>
-            <td>{ch.startDate}</td>
-            <td>
-              <span className={ch.trackAllowed ? styles.yesBadge : styles.noBadge}>
-                {ch.trackAllowed ? 'Yes' : 'No'}
-              </span>
-            </td>
-            <td className={styles.actionCell}>
+  <thead>
+    <tr>
+      <th>Challenge Name</th>
+      <th>Start Date</th>
+      <th>Tracking</th>
+      <th>Status</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {userChallenges.length > 0 ? (
+      userChallenges.map(ch => (
+        <tr key={ch.challengeId}>
+          <td>{ch.challengeName}</td>
+          <td>{ch.startDate}</td>
+          <td>
+            <span className={ch.trackAllowed ? styles.yesBadge : styles.noBadge}>
+              {ch.trackAllowed ? 'Yes' : 'No'}
+            </span>
+          </td>
+          <td>{ch.status}</td>
+          <td className={styles.actionCell}>
             <Button
-               variant="secondary"
-               classNameProps={styles.button}
-               onClick={() => handleDelete(ch.challengeId)}
+              variant="secondary"
+              classNameProps={styles.button}
+              onClick={() => handleDelete(ch.challengeId)}
             >
-               Delete
+              Delete
             </Button>
-            </td>
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td colSpan={4} className={styles.emptyRow}>
-            No challenges added yet.
           </td>
         </tr>
-      )}
-    </tbody>
-  </table>
+      ))
+    ) : (
+      <tr>
+        <td colSpan={5} className={styles.emptyRow}>
+          No challenges added yet.
+        </td>
+      </tr>
+    )}
+  </tbody>
+</table>
 </div>
 </div>
   );

@@ -1,0 +1,133 @@
+/* ChallengeTrackerForm.module.css */
+
+.dashboardContainer {
+  padding: 24px;
+}
+
+.header {
+  font-size: 28px;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.statBox {
+  background-color: #06B6D4; /* your original color */
+  color: white;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.statBox h3 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.statBox p {
+  font-size: 14px;
+  margin: 0;
+}
+.sectionHeader {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 16px 0;
+}
+
+.kmForm {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.kmFormGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.inputGroup label {
+  font-size: 14px;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.inputField {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.inputGroupButton {
+  display: flex;
+  align-items: flex-end;
+}
+
+.addButton {
+  background-color: #06B6D4;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.addButton:hover {
+  background-color: #059ec3;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.niceTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 32px;
+}
+
+.niceTable th, .niceTable td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.niceTable th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.deleteButton {
+  background-color: #ef4444;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.deleteButton:hover {
+  background-color: #dc2626;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #777;
+  margin-bottom: 32px;
+}

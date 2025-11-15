@@ -568,6 +568,7 @@ async function addUserChallenge(userChallenge) {
 
   const doc = {
     ...userChallenge,
+    status: 'In Progress',
     createdAt: getCurrentTime()  // reuse your existing function
   };
 
