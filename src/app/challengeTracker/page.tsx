@@ -15,7 +15,7 @@ export default function ChallengeTrackerPage() {
       <Breadcrumb links={TRACKER_BREADCRUMBS} />
       <Header
         headerText="Challenge Tracker"
-        captionText="Redeem cool rewards from partner brands as you complete challenges and milestones. Unlock perks tied to Breeze Navigator mileage and your Chill Challenge Hub completions."
+        captionText="Track your daily walks and cycles, record every kilometer, and see your progress grow. Complete challenges, hit milestones, and celebrate your achievements along the way. Your journey, your victories. Every step counts!"
         containerClassName={styles.container}
       />
       <div style={{ padding: "20px" }}>

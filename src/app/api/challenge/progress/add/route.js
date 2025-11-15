@@ -14,13 +14,13 @@ export async function POST(req) {
     const body = await req.json();
     const { challengeId, date, activity, km } = body;
 
-    if (!challengeId || !date || !activity || typeof km === 'undefined') {
+    if (!date || !activity || typeof km === 'undefined') {
       return NextResponse.json({ message: 'Missing fields' }, { status: 400 });
     }
 
     const result = await addProgressRecord({
       userId: userInfo.userId,
-      challengeId,
+      challengeId: challengeId || null, // store null if no challenge
       date,
       activity,
       km: Number(km)

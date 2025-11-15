@@ -78,6 +78,15 @@
   align-items: flex-end;
 }
 
+.inputGroup input,
+.inputGroup select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box; /* ensures padding is included in width */
+}
+
+
 .addButton {
   background-color: #06B6D4;
   color: white;
@@ -104,17 +113,17 @@
 
 .niceTable th, .niceTable td {
   padding: 12px 16px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #c7c5c5;
   text-align: left;
 }
 
 .niceTable th {
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
   font-weight: 600;
 }
 
 .deleteButton {
-  background-color: #ef4444;
+  background-color: #06B6D4;
   color: white;
   border: none;
   padding: 6px 12px;
@@ -123,11 +132,57 @@
 }
 
 .deleteButton:hover {
-  background-color: #dc2626;
+  background-color: #06B6D4;
 }
 
 .emptyMessage {
   text-align: center;
   color: #777;
   margin-bottom: 32px;
+}
+
+/* Buttons */
+.addButton {
+  background-color: #06b6d4; /* cyan-ish */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: #0e7490;
+}
+
+.deleteButton {
+  background-color: #06B6D4; /* red */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #0e7490;
+}
+
+.completeButton {
+  background-color: #06B6D4; /* green */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.completeButton:hover {
+  background-color: #0e7490;
 }

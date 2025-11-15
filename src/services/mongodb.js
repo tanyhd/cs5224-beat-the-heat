@@ -1,6 +1,8 @@
 const { MongoClient } = require('mongodb');
 import { Long } from 'mongodb';
 import crypto from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { ObjectId } from 'mongodb';
 
 let cachedClient = null;
 let cachedDb = null;
@@ -602,6 +604,80 @@ async function deleteUserChallenge(userId, challengeId) {
 
 // Export these functions using ES module syntax
 export { addUserChallenge, getUserChallenges, deleteUserChallenge };
+
+
+export async function addProgressRecord({ userId, challengeId, date, activity, km }) {
+  const database = await connectToDb();
+  try {
+    const progress = {
+      progressId: uuidv4(),
+      userId,
+      challengeId,
+      date,
+      activity,
+      km,
+      createdAt: getCurrentTime()
+    };
+
+    const result = await database.collection('challengeProgress').insertOne(progress);
+    return { status: '200', message: 'Progress added', insertedId: result.insertedId, progress };
+  } catch (err) {
+    console.error('Error adding progress record:', err);
+    return { status: '500', message: 'Error adding progress' };
+  }
+}
+
+export async function getProgressForUserAndChallenge(userId, challengeId) {
+  const database = await connectToDb();
+  const filter = { userId };
+  if (challengeId) filter.challengeId = challengeId; // optional
+  const rows = await database
+    .collection('challengeProgress')
+    .find(filter)
+    .sort({ date: 1, createdAt: 1 })
+    .toArray();
+  return rows;
+}
+
+export async function deleteProgressRecord(userId, entryId) {
+  const database = await connectToDb();
+  try {
+    const result = await database
+      .collection('challengeProgress')
+      .deleteOne({ _id: new ObjectId(entryId), userId });
+
+    if (result.deletedCount === 0) {
+      return { status: '404', message: 'Progress entry not found or not authorized' };
+    }
+
+    return { status: '200', message: 'Progress entry deleted' };
+  } catch (err) {
+    console.error('Error deleting progress record:', err);
+    return { status: '500', message: 'Error deleting progress' };
+  }
+}
+
+export async function updateChallengeStatus(userId, challengeId, status) {
+  const database = await connectToDb();
+  try {
+    const result = await database.collection('userChallenges').updateOne(
+      { userId, challengeId },
+      { $set: { status } }
+    );
+
+    if (result.matchedCount === 0) {
+      return { status: '404', message: 'Challenge not found or not authorized' };
+    }
+
+    return { status: '200', message: 'Challenge status updated' };
+  } catch (err) {
+    console.error('Error updating challenge status:', err);
+    return { status: '500', message: 'Error updating challenge' };
+  }
+}
+
+
+
 
 
 
