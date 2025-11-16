@@ -1,4 +1,4 @@
-import UserCards from "@/features/user/UserCards";
+import UserChallenges from "@/features/user/UserChallenges";
 import Breadcrumb from "@/common/components/Breadcrumb";
 import Header from "@/common/components/Header";
 import styles from "./CardsPage.module.css";
@@ -15,7 +15,7 @@ export default function CardsPage() {
     <>
       <Breadcrumb links={CARDMANAGEMENT_BREADCRUMBS} />
       <Header headerText="Your Challenges" captionText="" containerClassName={styles.headerContainer} />
-      <UserCards />
+      <UserChallenges />
     </>
   );
 }
