@@ -112,7 +112,7 @@ const Topnav: React.FC = () => {
                                  <Avatar stroke={"#06B6D4"} />
                                  <span>Manage Profile</span>
                               </a>
-                              <a href="/cards" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
+                              <a href="/challenges" className={styles.mobileMenuLink} onClick={() => setMobileMenuOpen(false)}>
                                  <Walking stroke={"#06B6D4"} />
                                  <span>Manage Challenges</span>
                               </a>
@@ -157,7 +157,7 @@ const Topnav: React.FC = () => {
                   <Avatar stroke={"#06B6D4"} className={styles.avatar} onClick={() => {setProfileMenuToggle(!profileMenuToggle)}}/>
                   <div className={styles.profileMenu} style={{display: profileMenuToggle ? 'block' : 'none'}}>
                      <a href="/profile" className={styles.profileSubMenu}><Avatar stroke={"#06B6D4"} className={styles.subAvatar}/>Manage Profile</a>
-                     <a href="/cards" className={styles.profileSubMenu}><Walking stroke={"#06B6D4"} className={styles.subAvatar}/>Manage Challenges</a>
+                     <a href="/challenges" className={styles.profileSubMenu}><Walking stroke={"#06B6D4"} className={styles.subAvatar}/>Manage Challenges</a>
                      <a href="/login" className={styles.profileSubMenu} onClick={() => {sessionStorage.removeItem('userToken')}}><Logout stroke="#06B6D4" className={styles.subAvatar}/>Sign out</a>
                   </div>
                </>

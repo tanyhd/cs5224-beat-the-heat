@@ -32,7 +32,7 @@ export default function CardDetailSelector({ cardDetails, setSelectedCard, selec
           />
         </>
       ) : (
-        <Button href="/cards">Please add a card to track</Button>
+        <Button href="/challenges">Please add a card to track</Button>
       )}
     </>
   );

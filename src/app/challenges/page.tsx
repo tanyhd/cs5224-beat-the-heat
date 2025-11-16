@@ -6,7 +6,7 @@ import styles from "./CardsPage.module.css";
 
 const CARDMANAGEMENT_BREADCRUMBS = [
   { name: "Home", href: "/" },
-  { name: "Challenge Management", href: "/cards" },
+  { name: "Challenge Management", href: "/challenges" },
 ]
 
 export default function CardsPage() {

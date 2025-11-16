@@ -37,7 +37,7 @@ export default function CardDetailselector({ cardDetails, setSelectedCard, selec
                icon={<SlimArrowRight />}
             />
          ) : (
-            <Button href="/cards">Please add a card to track</Button>
+            <Button href="/challenges">Please add a card to track</Button>
          )}
       </>
    )

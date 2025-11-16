@@ -21,7 +21,7 @@ export default function CardInfo ({selectedCard, selectedRewardsData, fetchCards
       return null
    }
    if (!selectedCard?.rewardsType) {
-      return <Button href="/cards">Please edit rewards info for this card</Button>
+      return <Button href="/challenges">Please edit rewards info for this card</Button>
    }
    return (
       <>
