@@ -5,7 +5,7 @@ import styles from './Cards.module.css'
 import CreditCard from "@/common/icons/CreditCard";
 import { ActionDetailBox } from "@/common/components/DetailBox";
 import Button from "@/common/components/Button";
-import CreditCardAddForm from "@/features/creditCardAdd/CreditCardAddForm";
+import ManageChallengeForm from "@/features/manageChallenge/ManageChallengeForm";
 import CreditCardEditForm from "@/features/creditCardEdit/CreditCardEditForm";
 import Loading from "@/common/components/Loading";
 import { LOADING_DELAY } from "@/common/constants/loadingDelay";
@@ -211,7 +211,7 @@ export default function UserCards() {
                         onCancel={() => setEditingCard(null)}
                     />
                 ) : (
-                    <CreditCardAddForm />
+                    <ManageChallengeForm />
                 )}
             </div>
         </div>

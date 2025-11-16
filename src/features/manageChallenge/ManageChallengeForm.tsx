@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import styles from './CreditCardAddForm.module.css';
+import styles from './ManageChallengeForm.module.css';
 import Button from "@/common/components/Button";
 import InputLabel from "@/common/components/InputLabel";
 import CreditCard from "@/common/icons/CreditCard";
@@ -37,7 +37,7 @@ export interface UserChallenge {
    status?: string;
 }
 
-export default function ChallengeAddForm() {
+export default function ManageChallengeForm() {
   const [notificationState, setNotificationState] = useState<{
     message: string;
     type: NotificationType | null;
