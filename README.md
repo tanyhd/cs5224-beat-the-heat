@@ -103,7 +103,7 @@ The process is:
 
 #### Authentication System
 
-Authentication and user management are handled by `src/app/api/login/route.js`, `src/app/api/signup/route.js`, and supporting functions in `src/services/mongodb.js` (`checkUserToken`, `createUser`).
+Authentication and user management are handled by `src/app/api/login/route.js`, `src/app/api/signup/route.js`, and supporting functions in `src/services/mongodb.js` (`checkUserToken`, `addNewUser`).
 
 The main components of the authentication system are:
 
