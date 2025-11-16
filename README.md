@@ -1,4 +1,4 @@
-# Beat The Heat
+# Beat The Heat - https://www.beattheheat.run.place/
 
 A Next.js application for route planning with shelter optimization, challenge tracking, and temperature-aware navigation in Singapore.
 
