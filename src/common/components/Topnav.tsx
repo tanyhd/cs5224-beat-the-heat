@@ -3,11 +3,8 @@
 import NAV_LINKS from "../constants/navlinks";
 import styles from "./Topnav.module.css";
 import React, { useState, useEffect } from 'react';
-import Tag from "../icons/Tag";
-import TrendingUp from "../icons/TrendingUp";
 import Grid from "../icons/Grid";
-import Avatar from "../icons/Avatar"; 
-import CreditCard from "../icons/CreditCard";
+import Avatar from "../icons/Avatar";
 import Logout from "../icons/Logout";
 import Modal from "./Modal";
 import Header from "./Header";
@@ -27,11 +24,9 @@ import AvatarPlus from "../icons/AvatarPlus";
 import Walking from "../icons/Walking";
 
 
-const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/merchant-search', '/challengeHub', '/map', '/about', '/shared'];
-const ICON_MAP: Record<'TAG' | 'TRENDINGUP' | 'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN' | 'INFO', React.JSX.Element> = {
+const NON_AUTH_PAGES=['/', '/login', '/signup', '/home', '/challengeHub', '/map', '/about', '/shared'];
+const ICON_MAP: Record<'GRID' | 'BEAT' | 'TROPHY' | 'HANDSHAKE' | 'BLUEPIN' | 'INFO', React.JSX.Element> = {
    BLUEPIN: <BluePin />,
-   TAG: <Tag />,
-   TRENDINGUP: <TrendingUp />,
    GRID: <Grid />,
    BEAT: <Beat />,
    TROPHY: <Trophy stroke="#052F5F" />,
