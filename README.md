@@ -1,4 +1,4 @@
-# Beat The Heat - https://www.beattheheat.run.place/
+# Beat The Heat - https://cs5224-beat-the-heat.vercel.app/
 
 A Next.js application for route planning with shelter optimization, challenge tracking, and temperature-aware navigation in Singapore.
 
