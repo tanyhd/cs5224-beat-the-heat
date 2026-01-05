@@ -18,7 +18,7 @@
     "cheerio": "^1.1.2",
     "classnames": "^2.5.1",
     "mongodb": "^3.7.3",
-    "next": "15.2.1",
+    "next": "15.2.8",
     "node": "^20.19.0",
     "node-jose": "^2.2.0",
     "pdfreader": "^3.0.7",
