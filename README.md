@@ -1,8 +1,24 @@
-# Beat The Heat - https://cs5224-beat-the-heat.vercel.app/
+**Demo:** https://cs5224-beat-the-heat.vercel.app/
+**Code (fork):** https://github.com/tanyhd/cs5224-beat-the-heat
+**Original repo:** https://github.com/jocelynsursas/cs5224-beat-the-heat
 
-A Next.js application for route planning with shelter optimization, challenge tracking, and temperature-aware navigation in Singapore.
+A Next.js application for route planning with shelter optimization and temperature-aware navigation in Singapore.
 
-## Code Explanation
+## My contributions (Darren)
+- Owned the end-to-end delivery of key features including authentication, route persistence/sharing, and temperature-aware routing: implementation, integration, testing, and deployment.
+- Implemented authentication + account management: signup/login/logout, profile updates, bcrypt password hashing, token-based sessions with expiry.
+- Built and integrated route saving/loading + shareable routes and ensured compatibility with the map UI and API routes.
+- Integrated temperature data pipeline and route-level temperature statistics; validated correctness and improved reliability/performance.
+
+## AI assistance note
+Parts of the route saving, temperature integration, and map routing logic were developed with assistance from AI code generation tools. I reviewed the code, adapted it to the codebase, fixed bugs/edge cases, and ensured the final implementation works end-to-end in production.
+
+## Deployment note
+This fork is deployed on **Vercel**. The **scraping cron job is not enabled** in this deployment.
+
+
+
+## Technical Details / Code Explanation
 
 ### Project Structure
 
